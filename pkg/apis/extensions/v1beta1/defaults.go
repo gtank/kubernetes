@@ -161,5 +161,10 @@ func addDefaultingFuncs(scheme *runtime.Scheme) {
 				*obj.Spec.Replicas = 1
 			}
 		},
+		func(obj *CertificateSigningRequest) {
+			if obj.Spec.CertificateRequest == nil {
+				obj.Spec.CertificateRequest = make([]byte, 0)
+			}
+		},
 	)
 }

@@ -60,28 +60,32 @@ func addKnownTypes(scheme *runtime.Scheme) {
 		&v1.DeleteOptions{},
 		&ReplicaSet{},
 		&ReplicaSetList{},
+		&CertificateSigningRequest{},
+		&CertificateSigningRequestList{},
 	)
 }
 
-func (obj *ClusterAutoscaler) GetObjectKind() unversioned.ObjectKind           { return &obj.TypeMeta }
-func (obj *ClusterAutoscalerList) GetObjectKind() unversioned.ObjectKind       { return &obj.TypeMeta }
-func (obj *Deployment) GetObjectKind() unversioned.ObjectKind                  { return &obj.TypeMeta }
-func (obj *DeploymentList) GetObjectKind() unversioned.ObjectKind              { return &obj.TypeMeta }
-func (obj *DeploymentRollback) GetObjectKind() unversioned.ObjectKind          { return &obj.TypeMeta }
-func (obj *HorizontalPodAutoscaler) GetObjectKind() unversioned.ObjectKind     { return &obj.TypeMeta }
-func (obj *HorizontalPodAutoscalerList) GetObjectKind() unversioned.ObjectKind { return &obj.TypeMeta }
-func (obj *Job) GetObjectKind() unversioned.ObjectKind                         { return &obj.TypeMeta }
-func (obj *JobList) GetObjectKind() unversioned.ObjectKind                     { return &obj.TypeMeta }
-func (obj *ReplicationControllerDummy) GetObjectKind() unversioned.ObjectKind  { return &obj.TypeMeta }
-func (obj *Scale) GetObjectKind() unversioned.ObjectKind                       { return &obj.TypeMeta }
-func (obj *ThirdPartyResource) GetObjectKind() unversioned.ObjectKind          { return &obj.TypeMeta }
-func (obj *ThirdPartyResourceList) GetObjectKind() unversioned.ObjectKind      { return &obj.TypeMeta }
-func (obj *DaemonSet) GetObjectKind() unversioned.ObjectKind                   { return &obj.TypeMeta }
-func (obj *DaemonSetList) GetObjectKind() unversioned.ObjectKind               { return &obj.TypeMeta }
-func (obj *ThirdPartyResourceData) GetObjectKind() unversioned.ObjectKind      { return &obj.TypeMeta }
-func (obj *ThirdPartyResourceDataList) GetObjectKind() unversioned.ObjectKind  { return &obj.TypeMeta }
-func (obj *Ingress) GetObjectKind() unversioned.ObjectKind                     { return &obj.TypeMeta }
-func (obj *IngressList) GetObjectKind() unversioned.ObjectKind                 { return &obj.TypeMeta }
-func (obj *ListOptions) GetObjectKind() unversioned.ObjectKind                 { return &obj.TypeMeta }
-func (obj *ReplicaSet) GetObjectKind() unversioned.ObjectKind                  { return &obj.TypeMeta }
-func (obj *ReplicaSetList) GetObjectKind() unversioned.ObjectKind              { return &obj.TypeMeta }
+func (obj *ClusterAutoscaler) GetObjectKind() unversioned.ObjectKind             { return &obj.TypeMeta }
+func (obj *ClusterAutoscalerList) GetObjectKind() unversioned.ObjectKind         { return &obj.TypeMeta }
+func (obj *Deployment) GetObjectKind() unversioned.ObjectKind                    { return &obj.TypeMeta }
+func (obj *DeploymentList) GetObjectKind() unversioned.ObjectKind                { return &obj.TypeMeta }
+func (obj *DeploymentRollback) GetObjectKind() unversioned.ObjectKind            { return &obj.TypeMeta }
+func (obj *HorizontalPodAutoscaler) GetObjectKind() unversioned.ObjectKind       { return &obj.TypeMeta }
+func (obj *HorizontalPodAutoscalerList) GetObjectKind() unversioned.ObjectKind   { return &obj.TypeMeta }
+func (obj *Job) GetObjectKind() unversioned.ObjectKind                           { return &obj.TypeMeta }
+func (obj *JobList) GetObjectKind() unversioned.ObjectKind                       { return &obj.TypeMeta }
+func (obj *ReplicationControllerDummy) GetObjectKind() unversioned.ObjectKind    { return &obj.TypeMeta }
+func (obj *Scale) GetObjectKind() unversioned.ObjectKind                         { return &obj.TypeMeta }
+func (obj *ThirdPartyResource) GetObjectKind() unversioned.ObjectKind            { return &obj.TypeMeta }
+func (obj *ThirdPartyResourceList) GetObjectKind() unversioned.ObjectKind        { return &obj.TypeMeta }
+func (obj *DaemonSet) GetObjectKind() unversioned.ObjectKind                     { return &obj.TypeMeta }
+func (obj *DaemonSetList) GetObjectKind() unversioned.ObjectKind                 { return &obj.TypeMeta }
+func (obj *ThirdPartyResourceData) GetObjectKind() unversioned.ObjectKind        { return &obj.TypeMeta }
+func (obj *ThirdPartyResourceDataList) GetObjectKind() unversioned.ObjectKind    { return &obj.TypeMeta }
+func (obj *Ingress) GetObjectKind() unversioned.ObjectKind                       { return &obj.TypeMeta }
+func (obj *IngressList) GetObjectKind() unversioned.ObjectKind                   { return &obj.TypeMeta }
+func (obj *ListOptions) GetObjectKind() unversioned.ObjectKind                   { return &obj.TypeMeta }
+func (obj *ReplicaSet) GetObjectKind() unversioned.ObjectKind                    { return &obj.TypeMeta }
+func (obj *ReplicaSetList) GetObjectKind() unversioned.ObjectKind                { return &obj.TypeMeta }
+func (obj *CertificateSigningRequest) GetObjectKind() unversioned.ObjectKind     { return &obj.TypeMeta }
+func (obj *CertificateSigningRequestList) GetObjectKind() unversioned.ObjectKind { return &obj.TypeMeta }

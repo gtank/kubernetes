@@ -17,11 +17,65 @@ limitations under the License.
 package v1beta1
 
 import (
+	"crypto/x509/pkix"
+
 	"k8s.io/kubernetes/pkg/api/resource"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/util/intstr"
 )
+
+// Describes a certificate signing request
+type CertificateSigningRequest struct {
+	unversioned.TypeMeta `json:",inline"`
+	v1.ObjectMeta        `json:"metadata,omitempty"`
+
+	// Specifies the behavior of the CSR
+	Spec CertificateSigningRequestSpec
+
+	// Most recently observed status of the CSR
+	Status CertificateSigningRequestStatus
+}
+
+type CertificateSigningRequestSpec struct {
+	// Raw PKCS#10 CSR data
+	CertificateRequest []byte `json:"csr"`
+
+	// Fingerprint of the public key that signed the CSR
+	Fingerprint string `json:"fingerprint,omitempty"`
+
+	// Subject fields from the CSR
+	Subject pkix.Name `json:"subject,omitempty"`
+
+	// DNS SANs from the CSR
+	Hostnames []string `json:"hostnames,omitempty"`
+
+	// IP SANs from the CSR
+	IPAddresses []string `json:"ipaddresses,omitempty"`
+
+	// Extra information the node wishes to send with the request
+	ExtraInfo []string `json:"extrainfo,omitempty"`
+}
+
+type CertificateSigningRequestStatus struct {
+	// Indicates whether CSR has a response yet. Default is Unknown. Status
+	// is True for approval and False for rejections.
+	Status v1.ConditionStatus
+
+	// If CSR was rejected, these contain the reason why (if any was supplied).
+	Reason  string `json:"reason,omitempty"`
+	Message string `json:"message,omitempty"`
+
+	// If CSR was approved, this contains the issued certificate.
+	Certificate []byte `json:"certificate,omitempty"`
+}
+
+type CertificateSigningRequestList struct {
+	unversioned.TypeMeta `json:",inline"`
+	unversioned.ListMeta `json:"metadata,omitempty"`
+
+	Items []CertificateSigningRequest `json:"items,omitempty"`
+}
 
 // describes the attributes of a scale subresource
 type ScaleSpec struct {

@@ -26,6 +26,10 @@ import (
 	"k8s.io/kubernetes/pkg/util/intstr"
 )
 
+func TestValidateCertificateSigningRequest(t *testing.T) {
+	// TODO: test CSR validation once it exists
+}
+
 func TestValidateHorizontalPodAutoscaler(t *testing.T) {
 	successCases := []extensions.HorizontalPodAutoscaler{
 		{

@@ -32,6 +32,20 @@ import (
 	"k8s.io/kubernetes/pkg/util/validation/field"
 )
 
+func ValidateCertificateSigningRequest(csr *extensions.CertificateSigningRequest, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+	// TODO: attempt to parse the CSR and do some sanity checks
+
+	return allErrs
+}
+
+func ValidateCertificateSigningRequestUpdate(newCSR, oldCSR *extensions.CertificateSigningRequest) field.ErrorList {
+	allErrs := field.ErrorList{}
+	// TODO: attempt to parse the CSR and do some sanity checks
+
+	return allErrs
+}
+
 // ValidateHorizontalPodAutoscaler can be used to check whether the given autoscaler name is valid.
 // Prefix indicates this name will be used as part of generation, in which case trailing dashes are allowed.
 func ValidateHorizontalPodAutoscalerName(name string, prefix bool) (bool, string) {

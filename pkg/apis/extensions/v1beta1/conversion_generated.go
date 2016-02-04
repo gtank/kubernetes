@@ -2454,6 +2454,115 @@ func Convert_extensions_CPUTargetUtilization_To_v1beta1_CPUTargetUtilization(in 
 	return autoConvert_extensions_CPUTargetUtilization_To_v1beta1_CPUTargetUtilization(in, out, s)
 }
 
+func autoConvert_extensions_CertificateSigningRequest_To_v1beta1_CertificateSigningRequest(in *extensions.CertificateSigningRequest, out *CertificateSigningRequest, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*extensions.CertificateSigningRequest))(in)
+	}
+	if err := api.Convert_unversioned_TypeMeta_To_unversioned_TypeMeta(&in.TypeMeta, &out.TypeMeta, s); err != nil {
+		return err
+	}
+	if err := Convert_api_ObjectMeta_To_v1_ObjectMeta(&in.ObjectMeta, &out.ObjectMeta, s); err != nil {
+		return err
+	}
+	if err := Convert_extensions_CertificateSigningRequestSpec_To_v1beta1_CertificateSigningRequestSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_extensions_CertificateSigningRequestStatus_To_v1beta1_CertificateSigningRequestStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_extensions_CertificateSigningRequest_To_v1beta1_CertificateSigningRequest(in *extensions.CertificateSigningRequest, out *CertificateSigningRequest, s conversion.Scope) error {
+	return autoConvert_extensions_CertificateSigningRequest_To_v1beta1_CertificateSigningRequest(in, out, s)
+}
+
+func autoConvert_extensions_CertificateSigningRequestList_To_v1beta1_CertificateSigningRequestList(in *extensions.CertificateSigningRequestList, out *CertificateSigningRequestList, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*extensions.CertificateSigningRequestList))(in)
+	}
+	if err := api.Convert_unversioned_TypeMeta_To_unversioned_TypeMeta(&in.TypeMeta, &out.TypeMeta, s); err != nil {
+		return err
+	}
+	if err := api.Convert_unversioned_ListMeta_To_unversioned_ListMeta(&in.ListMeta, &out.ListMeta, s); err != nil {
+		return err
+	}
+	if in.Items != nil {
+		out.Items = make([]CertificateSigningRequest, len(in.Items))
+		for i := range in.Items {
+			if err := Convert_extensions_CertificateSigningRequest_To_v1beta1_CertificateSigningRequest(&in.Items[i], &out.Items[i], s); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Items = nil
+	}
+	return nil
+}
+
+func Convert_extensions_CertificateSigningRequestList_To_v1beta1_CertificateSigningRequestList(in *extensions.CertificateSigningRequestList, out *CertificateSigningRequestList, s conversion.Scope) error {
+	return autoConvert_extensions_CertificateSigningRequestList_To_v1beta1_CertificateSigningRequestList(in, out, s)
+}
+
+func autoConvert_extensions_CertificateSigningRequestSpec_To_v1beta1_CertificateSigningRequestSpec(in *extensions.CertificateSigningRequestSpec, out *CertificateSigningRequestSpec, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*extensions.CertificateSigningRequestSpec))(in)
+	}
+	if err := conversion.ByteSliceCopy(&in.CertificateRequest, &out.CertificateRequest, s); err != nil {
+		return err
+	}
+	out.Fingerprint = in.Fingerprint
+	if err := s.Convert(&in.Subject, &out.Subject, 0); err != nil {
+		return err
+	}
+	if in.Hostnames != nil {
+		out.Hostnames = make([]string, len(in.Hostnames))
+		for i := range in.Hostnames {
+			out.Hostnames[i] = in.Hostnames[i]
+		}
+	} else {
+		out.Hostnames = nil
+	}
+	if in.IPAddresses != nil {
+		out.IPAddresses = make([]string, len(in.IPAddresses))
+		for i := range in.IPAddresses {
+			out.IPAddresses[i] = in.IPAddresses[i]
+		}
+	} else {
+		out.IPAddresses = nil
+	}
+	if in.ExtraInfo != nil {
+		out.ExtraInfo = make([]string, len(in.ExtraInfo))
+		for i := range in.ExtraInfo {
+			out.ExtraInfo[i] = in.ExtraInfo[i]
+		}
+	} else {
+		out.ExtraInfo = nil
+	}
+	return nil
+}
+
+func Convert_extensions_CertificateSigningRequestSpec_To_v1beta1_CertificateSigningRequestSpec(in *extensions.CertificateSigningRequestSpec, out *CertificateSigningRequestSpec, s conversion.Scope) error {
+	return autoConvert_extensions_CertificateSigningRequestSpec_To_v1beta1_CertificateSigningRequestSpec(in, out, s)
+}
+
+func autoConvert_extensions_CertificateSigningRequestStatus_To_v1beta1_CertificateSigningRequestStatus(in *extensions.CertificateSigningRequestStatus, out *CertificateSigningRequestStatus, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*extensions.CertificateSigningRequestStatus))(in)
+	}
+	out.Status = v1.ConditionStatus(in.Status)
+	out.Reason = in.Reason
+	out.Message = in.Message
+	if err := conversion.ByteSliceCopy(&in.Certificate, &out.Certificate, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_extensions_CertificateSigningRequestStatus_To_v1beta1_CertificateSigningRequestStatus(in *extensions.CertificateSigningRequestStatus, out *CertificateSigningRequestStatus, s conversion.Scope) error {
+	return autoConvert_extensions_CertificateSigningRequestStatus_To_v1beta1_CertificateSigningRequestStatus(in, out, s)
+}
+
 func autoConvert_extensions_ClusterAutoscaler_To_v1beta1_ClusterAutoscaler(in *extensions.ClusterAutoscaler, out *ClusterAutoscaler, s conversion.Scope) error {
 	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
 		defaulting.(func(*extensions.ClusterAutoscaler))(in)
@@ -3629,6 +3738,115 @@ func autoConvert_v1beta1_CPUTargetUtilization_To_extensions_CPUTargetUtilization
 
 func Convert_v1beta1_CPUTargetUtilization_To_extensions_CPUTargetUtilization(in *CPUTargetUtilization, out *extensions.CPUTargetUtilization, s conversion.Scope) error {
 	return autoConvert_v1beta1_CPUTargetUtilization_To_extensions_CPUTargetUtilization(in, out, s)
+}
+
+func autoConvert_v1beta1_CertificateSigningRequest_To_extensions_CertificateSigningRequest(in *CertificateSigningRequest, out *extensions.CertificateSigningRequest, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*CertificateSigningRequest))(in)
+	}
+	if err := api.Convert_unversioned_TypeMeta_To_unversioned_TypeMeta(&in.TypeMeta, &out.TypeMeta, s); err != nil {
+		return err
+	}
+	if err := Convert_v1_ObjectMeta_To_api_ObjectMeta(&in.ObjectMeta, &out.ObjectMeta, s); err != nil {
+		return err
+	}
+	if err := Convert_v1beta1_CertificateSigningRequestSpec_To_extensions_CertificateSigningRequestSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1beta1_CertificateSigningRequestStatus_To_extensions_CertificateSigningRequestStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_v1beta1_CertificateSigningRequest_To_extensions_CertificateSigningRequest(in *CertificateSigningRequest, out *extensions.CertificateSigningRequest, s conversion.Scope) error {
+	return autoConvert_v1beta1_CertificateSigningRequest_To_extensions_CertificateSigningRequest(in, out, s)
+}
+
+func autoConvert_v1beta1_CertificateSigningRequestList_To_extensions_CertificateSigningRequestList(in *CertificateSigningRequestList, out *extensions.CertificateSigningRequestList, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*CertificateSigningRequestList))(in)
+	}
+	if err := api.Convert_unversioned_TypeMeta_To_unversioned_TypeMeta(&in.TypeMeta, &out.TypeMeta, s); err != nil {
+		return err
+	}
+	if err := api.Convert_unversioned_ListMeta_To_unversioned_ListMeta(&in.ListMeta, &out.ListMeta, s); err != nil {
+		return err
+	}
+	if in.Items != nil {
+		out.Items = make([]extensions.CertificateSigningRequest, len(in.Items))
+		for i := range in.Items {
+			if err := Convert_v1beta1_CertificateSigningRequest_To_extensions_CertificateSigningRequest(&in.Items[i], &out.Items[i], s); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Items = nil
+	}
+	return nil
+}
+
+func Convert_v1beta1_CertificateSigningRequestList_To_extensions_CertificateSigningRequestList(in *CertificateSigningRequestList, out *extensions.CertificateSigningRequestList, s conversion.Scope) error {
+	return autoConvert_v1beta1_CertificateSigningRequestList_To_extensions_CertificateSigningRequestList(in, out, s)
+}
+
+func autoConvert_v1beta1_CertificateSigningRequestSpec_To_extensions_CertificateSigningRequestSpec(in *CertificateSigningRequestSpec, out *extensions.CertificateSigningRequestSpec, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*CertificateSigningRequestSpec))(in)
+	}
+	if err := conversion.ByteSliceCopy(&in.CertificateRequest, &out.CertificateRequest, s); err != nil {
+		return err
+	}
+	out.Fingerprint = in.Fingerprint
+	if err := s.Convert(&in.Subject, &out.Subject, 0); err != nil {
+		return err
+	}
+	if in.Hostnames != nil {
+		out.Hostnames = make([]string, len(in.Hostnames))
+		for i := range in.Hostnames {
+			out.Hostnames[i] = in.Hostnames[i]
+		}
+	} else {
+		out.Hostnames = nil
+	}
+	if in.IPAddresses != nil {
+		out.IPAddresses = make([]string, len(in.IPAddresses))
+		for i := range in.IPAddresses {
+			out.IPAddresses[i] = in.IPAddresses[i]
+		}
+	} else {
+		out.IPAddresses = nil
+	}
+	if in.ExtraInfo != nil {
+		out.ExtraInfo = make([]string, len(in.ExtraInfo))
+		for i := range in.ExtraInfo {
+			out.ExtraInfo[i] = in.ExtraInfo[i]
+		}
+	} else {
+		out.ExtraInfo = nil
+	}
+	return nil
+}
+
+func Convert_v1beta1_CertificateSigningRequestSpec_To_extensions_CertificateSigningRequestSpec(in *CertificateSigningRequestSpec, out *extensions.CertificateSigningRequestSpec, s conversion.Scope) error {
+	return autoConvert_v1beta1_CertificateSigningRequestSpec_To_extensions_CertificateSigningRequestSpec(in, out, s)
+}
+
+func autoConvert_v1beta1_CertificateSigningRequestStatus_To_extensions_CertificateSigningRequestStatus(in *CertificateSigningRequestStatus, out *extensions.CertificateSigningRequestStatus, s conversion.Scope) error {
+	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
+		defaulting.(func(*CertificateSigningRequestStatus))(in)
+	}
+	out.Status = api.ConditionStatus(in.Status)
+	out.Reason = in.Reason
+	out.Message = in.Message
+	if err := conversion.ByteSliceCopy(&in.Certificate, &out.Certificate, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Convert_v1beta1_CertificateSigningRequestStatus_To_extensions_CertificateSigningRequestStatus(in *CertificateSigningRequestStatus, out *extensions.CertificateSigningRequestStatus, s conversion.Scope) error {
+	return autoConvert_v1beta1_CertificateSigningRequestStatus_To_extensions_CertificateSigningRequestStatus(in, out, s)
 }
 
 func autoConvert_v1beta1_ClusterAutoscaler_To_extensions_ClusterAutoscaler(in *ClusterAutoscaler, out *extensions.ClusterAutoscaler, s conversion.Scope) error {
@@ -4833,6 +5051,10 @@ func init() {
 		autoConvert_api_Volume_To_v1_Volume,
 		autoConvert_extensions_APIVersion_To_v1beta1_APIVersion,
 		autoConvert_extensions_CPUTargetUtilization_To_v1beta1_CPUTargetUtilization,
+		autoConvert_extensions_CertificateSigningRequestList_To_v1beta1_CertificateSigningRequestList,
+		autoConvert_extensions_CertificateSigningRequestSpec_To_v1beta1_CertificateSigningRequestSpec,
+		autoConvert_extensions_CertificateSigningRequestStatus_To_v1beta1_CertificateSigningRequestStatus,
+		autoConvert_extensions_CertificateSigningRequest_To_v1beta1_CertificateSigningRequest,
 		autoConvert_extensions_ClusterAutoscalerList_To_v1beta1_ClusterAutoscalerList,
 		autoConvert_extensions_ClusterAutoscalerSpec_To_v1beta1_ClusterAutoscalerSpec,
 		autoConvert_extensions_ClusterAutoscaler_To_v1beta1_ClusterAutoscaler,
@@ -4930,6 +5152,10 @@ func init() {
 		autoConvert_v1_Volume_To_api_Volume,
 		autoConvert_v1beta1_APIVersion_To_extensions_APIVersion,
 		autoConvert_v1beta1_CPUTargetUtilization_To_extensions_CPUTargetUtilization,
+		autoConvert_v1beta1_CertificateSigningRequestList_To_extensions_CertificateSigningRequestList,
+		autoConvert_v1beta1_CertificateSigningRequestSpec_To_extensions_CertificateSigningRequestSpec,
+		autoConvert_v1beta1_CertificateSigningRequestStatus_To_extensions_CertificateSigningRequestStatus,
+		autoConvert_v1beta1_CertificateSigningRequest_To_extensions_CertificateSigningRequest,
 		autoConvert_v1beta1_ClusterAutoscalerList_To_extensions_ClusterAutoscalerList,
 		autoConvert_v1beta1_ClusterAutoscalerSpec_To_extensions_ClusterAutoscalerSpec,
 		autoConvert_v1beta1_ClusterAutoscaler_To_extensions_ClusterAutoscaler,

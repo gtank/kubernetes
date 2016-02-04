@@ -19,6 +19,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	pkix "crypto/x509/pkix"
 	time "time"
 
 	api "k8s.io/kubernetes/pkg/api"
@@ -962,6 +963,99 @@ func deepCopy_v1beta1_CPUTargetUtilization(in CPUTargetUtilization, out *CPUTarg
 	return nil
 }
 
+func deepCopy_v1beta1_CertificateSigningRequest(in CertificateSigningRequest, out *CertificateSigningRequest, c *conversion.Cloner) error {
+	if err := deepCopy_unversioned_TypeMeta(in.TypeMeta, &out.TypeMeta, c); err != nil {
+		return err
+	}
+	if err := deepCopy_v1_ObjectMeta(in.ObjectMeta, &out.ObjectMeta, c); err != nil {
+		return err
+	}
+	if err := deepCopy_v1beta1_CertificateSigningRequestSpec(in.Spec, &out.Spec, c); err != nil {
+		return err
+	}
+	if err := deepCopy_v1beta1_CertificateSigningRequestStatus(in.Status, &out.Status, c); err != nil {
+		return err
+	}
+	return nil
+}
+
+func deepCopy_v1beta1_CertificateSigningRequestList(in CertificateSigningRequestList, out *CertificateSigningRequestList, c *conversion.Cloner) error {
+	if err := deepCopy_unversioned_TypeMeta(in.TypeMeta, &out.TypeMeta, c); err != nil {
+		return err
+	}
+	if err := deepCopy_unversioned_ListMeta(in.ListMeta, &out.ListMeta, c); err != nil {
+		return err
+	}
+	if in.Items != nil {
+		out.Items = make([]CertificateSigningRequest, len(in.Items))
+		for i := range in.Items {
+			if err := deepCopy_v1beta1_CertificateSigningRequest(in.Items[i], &out.Items[i], c); err != nil {
+				return err
+			}
+		}
+	} else {
+		out.Items = nil
+	}
+	return nil
+}
+
+func deepCopy_v1beta1_CertificateSigningRequestSpec(in CertificateSigningRequestSpec, out *CertificateSigningRequestSpec, c *conversion.Cloner) error {
+	if in.CertificateRequest != nil {
+		out.CertificateRequest = make([]uint8, len(in.CertificateRequest))
+		for i := range in.CertificateRequest {
+			out.CertificateRequest[i] = in.CertificateRequest[i]
+		}
+	} else {
+		out.CertificateRequest = nil
+	}
+	out.Fingerprint = in.Fingerprint
+	if newVal, err := c.DeepCopy(in.Subject); err != nil {
+		return err
+	} else {
+		out.Subject = newVal.(pkix.Name)
+	}
+	if in.Hostnames != nil {
+		out.Hostnames = make([]string, len(in.Hostnames))
+		for i := range in.Hostnames {
+			out.Hostnames[i] = in.Hostnames[i]
+		}
+	} else {
+		out.Hostnames = nil
+	}
+	if in.IPAddresses != nil {
+		out.IPAddresses = make([]string, len(in.IPAddresses))
+		for i := range in.IPAddresses {
+			out.IPAddresses[i] = in.IPAddresses[i]
+		}
+	} else {
+		out.IPAddresses = nil
+	}
+	if in.ExtraInfo != nil {
+		out.ExtraInfo = make([]string, len(in.ExtraInfo))
+		for i := range in.ExtraInfo {
+			out.ExtraInfo[i] = in.ExtraInfo[i]
+		}
+	} else {
+		out.ExtraInfo = nil
+	}
+	return nil
+}
+
+func deepCopy_v1beta1_CertificateSigningRequestStatus(in CertificateSigningRequestStatus, out *CertificateSigningRequestStatus, c *conversion.Cloner) error {
+	out.Status = in.Status
+	out.Reason = in.Reason
+	out.Message = in.Message
+	if in.Certificate != nil {
+		out.Certificate = make([]uint8, len(in.Certificate))
+		for i := range in.Certificate {
+			out.Certificate[i] = in.Certificate[i]
+		}
+	} else {
+		out.Certificate = nil
+	}
+	return nil
+}
+
 func deepCopy_v1beta1_ClusterAutoscaler(in ClusterAutoscaler, out *ClusterAutoscaler, c *conversion.Cloner) error {
 	if err := deepCopy_unversioned_TypeMeta(in.TypeMeta, &out.TypeMeta, c); err != nil {
 		return err
@@ -1881,6 +1975,10 @@ func init() {
 		deepCopy_v1_VolumeSource,
 		deepCopy_v1beta1_APIVersion,
 		deepCopy_v1beta1_CPUTargetUtilization,
+		deepCopy_v1beta1_CertificateSigningRequest,
+		deepCopy_v1beta1_CertificateSigningRequestList,
+		deepCopy_v1beta1_CertificateSigningRequestSpec,
+		deepCopy_v1beta1_CertificateSigningRequestStatus,
 		deepCopy_v1beta1_ClusterAutoscaler,
 		deepCopy_v1beta1_ClusterAutoscalerList,
 		deepCopy_v1beta1_ClusterAutoscalerSpec,
