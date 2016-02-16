@@ -45,6 +45,39 @@ func (CPUTargetUtilization) SwaggerDoc() map[string]string {
 	return map_CPUTargetUtilization
 }
 
+var map_CertificateSigningRequest = map[string]string{
+	"":       "Describes a certificate signing request",
+	"Spec":   "Specifies the behavior of the CSR",
+	"Status": "Most recently observed status of the CSR",
+}
+
+func (CertificateSigningRequest) SwaggerDoc() map[string]string {
+	return map_CertificateSigningRequest
+}
+
+var map_CertificateSigningRequestSpec = map[string]string{
+	"csr":         "Raw PKCS#10 CSR data",
+	"fingerprint": "Fingerprint of the public key that signed the CSR",
+	"subject":     "Subject fields from the CSR",
+	"hostnames":   "DNS SANs from the CSR",
+	"ipaddresses": "IP SANs from the CSR",
+	"extrainfo":   "Extra information the node wishes to send with the request",
+}
+
+func (CertificateSigningRequestSpec) SwaggerDoc() map[string]string {
+	return map_CertificateSigningRequestSpec
+}
+
+var map_CertificateSigningRequestStatus = map[string]string{
+	"Status":      "Indicates whether CSR has a response yet. Default is Unknown. Status is True for approval and False for rejections.",
+	"reason":      "If CSR was rejected, these contain the reason why (if any was supplied).",
+	"certificate": "If CSR was approved, this contains the issued certificate.",
+}
+
+func (CertificateSigningRequestStatus) SwaggerDoc() map[string]string {
+	return map_CertificateSigningRequestStatus
+}
+
 var map_ClusterAutoscaler = map[string]string{
 	"metadata": "Standard object's metadata. More info: http://releases.k8s.io/HEAD/docs/devel/api-conventions.md#metadata For now (experimental api) it is required that the name is set to \"ClusterAutoscaler\" and namespace is \"default\".",
 	"spec":     "Spec defines the desired behavior of this daemon set. More info: http://releases.k8s.io/HEAD/docs/devel/api-conventions.md#spec-and-status",
