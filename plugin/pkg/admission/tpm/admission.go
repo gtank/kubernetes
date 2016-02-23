@@ -56,7 +56,8 @@ func (t *tpmAdmit) Admit(a admission.Attributes) (err error) {
 	if err != nil{
 		return admission.NewForbidden(a, err)
 	}
-	tpmdata, err := t.handler.Get(address.String(), true)
+	host := fmt.Sprintf("%s:23179", address.String())
+	tpmdata, err := t.handler.Get(host, true)
 	if err != nil {
 		glog.Errorf("Unable to obtain TPM object: %v", err)
 		return admission.NewForbidden(a, fmt.Errorf("Unable to obtain TPM object: %v", err))
