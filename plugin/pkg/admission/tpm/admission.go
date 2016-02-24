@@ -78,7 +78,7 @@ func (t *tpmAdmit) Admit(a admission.Attributes) (err error) {
 		glog.Errorf("Unable to parse valid PCR configuration: %v", err)
 		return admission.NewForbidden(a, fmt.Errorf("Can't parse PCR config: %v", err))
 	}
-	err = tpm.ValidateLog(log, quote, []int{4, 12, 13})
+	err = tpm.ValidateLog(log, quote, []int32{4, 12, 13})
 	if err != nil {
 		glog.Errorf("TPM event log does not match quote")
 		return admission.NewForbidden(a, fmt.Errorf("TPM event log does not match quote"))

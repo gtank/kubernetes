@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/coreos/go-tspi/tpmclient"
 	"github.com/coreos/go-tspi/tspiconst"
@@ -28,7 +29,7 @@ func (t *TPMHandler) Setup(c client.Interface) error {
 func (t *TPMHandler) Get(address string, allowEmpty bool) (*api.Tpm, error) {
 	var tpm *api.Tpm
 
-	c := tpmclient.New(address)
+	c := tpmclient.New(address, 30 * time.Second)
 	ekcert, err := c.GetEKCert()
 
 	if err != nil {
@@ -94,12 +95,12 @@ func (t *TPMHandler) Get(address string, allowEmpty bool) (*api.Tpm, error) {
 }
 
 func Quote(tpm *api.Tpm) ([][]byte, []tspiconst.Log, error) {
-	c := tpmclient.New(tpm.Address)
+	c := tpmclient.New(tpm.Address, 30 * time.Second)
 	quote, log, err := c.GetQuote(tpm.AIKPub, tpm.AIKBlob, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15})
 	return quote, log, err
 }
 
-func ValidateLogConsistency(log []tspiconst.Log, pcrs []int) error {
+func ValidateLogConsistency(log []tspiconst.Log, pcrs []int32) error {
 	for _, entry := range log {
 		for _, pcr := range pcrs {
 			if entry.Pcr != pcr {
@@ -116,7 +117,7 @@ func ValidateLogConsistency(log []tspiconst.Log, pcrs []int) error {
 	return nil
 }
 
-func ValidateLog(log []tspiconst.Log, quote [][]byte, pcrs []int) error {
+func ValidateLog(log []tspiconst.Log, quote [][]byte, pcrs []int32) error {
 	var virt_pcrs [24][20]byte
 
 	for _, entry := range log {
