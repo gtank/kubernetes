@@ -216,11 +216,44 @@ function set_service_accounts {
 
 function start_apiserver {
     # Admission Controllers to invoke prior to persisting objects in cluster
-    if [[ -z "${ALLOW_SECURITY_CONTEXT}" ]]; then
-      ADMISSION_CONTROL=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
-    else
-      ADMISSION_CONTROL=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota
-    fi
+    # if [[ -z "${ALLOW_SECURITY_CONTEXT}" ]]; then
+    #   ADMISSION_CONTROL=TPMAdmit,NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+    # else
+    #   ADMISSION_CONTROL=TPMAdmit,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota
+    # fi
+
+    ADMISSION_CONTROL=TPMAdmit
+
+    # Generate admit-all TPM policy
+    local ADMISSION_CONFIG=/tmp/kube-admission.cnf
+    local PCR_CONFIG=/tmp/pcr.config
+
+    [ -f $ADMISSION_CONFIG ] || {
+        echo "NEW TEMPLATE: $ADMISSION_CONFIG"
+        mkdir -p $(dirname $ADMISSION_CONFIG)
+        cat << EOF > $ADMISSION_CONFIG
+{"tpmadmit.pcrconfig": "${PCR_CONFIG}"}
+EOF
+}
+    [ -f $PCR_CONFIG ] || {
+        echo "NEW TEMPLATE: $PCR_CONFIG"
+        mkdir -p $(dirname $PCR_CONFIG)
+        cat << EOF > $PCR_CONFIG
+{
+ "0": ["*"],
+ "1": ["*"],
+ "2": ["*"],
+ "3": ["*"],
+ "4": ["*"],
+ "5": ["*"],
+ "6": ["*"],
+ "7": ["*"],
+ "8": ["*"],
+ "9": ["*"],
+ "10": ["*"],
+}
+EOF
+}
     # This is the default dir and filename where the apiserver will generate a self-signed cert
     # which should be able to be used as the CA to verify itself
     CERT_DIR=/var/run/kubernetes
@@ -242,6 +275,7 @@ function start_apiserver {
       --service-account-key-file="${SERVICE_ACCOUNT_KEY}" \
       --service-account-lookup="${SERVICE_ACCOUNT_LOOKUP}" \
       --admission-control="${ADMISSION_CONTROL}" \
+      --admission-control-config-file="${ADMISSION_CONFIG}"\
       --insecure-bind-address="${API_HOST}" \
       --insecure-port="${API_PORT}" \
       --etcd-servers="http://127.0.0.1:4001" \

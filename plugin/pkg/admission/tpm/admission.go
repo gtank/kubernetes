@@ -26,7 +26,7 @@ import (
 	"github.com/golang/glog"
 	"k8s.io/kubernetes/pkg/admission"
 	"k8s.io/kubernetes/pkg/api"
-        apierrors "k8s.io/kubernetes/pkg/api/errors"
+	apierrors "k8s.io/kubernetes/pkg/api/errors"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
 	nodeutil "k8s.io/kubernetes/pkg/util/node"
 	"k8s.io/kubernetes/pkg/util/tpm"
@@ -35,16 +35,18 @@ import (
 func init() {
 	admission.RegisterPlugin("TPMAdmit", func(client client.Interface, config io.Reader) (admission.Interface, error) {
 		return NewTPMAdmit(client, config), nil
-	})	
+	})
 }
 
 // TPMAdmit is an implementation of admission.Interface which performs TPM-based validation of the request
-type tpmAdmit struct{
-	handler tpm.TPMHandler
+type tpmAdmit struct {
+	handler   tpm.TPMHandler
 	pcrconfig string
 }
 
 func (t *tpmAdmit) Admit(a admission.Attributes) (err error) {
+	requestKind := a.GetKind()
+	glog.Infof("TPMAdmit received a request of type %s", requestKind.String())
 	if (a.GetOperation() != admission.Create && a.GetOperation() != admission.Update) || a.GetKind() != api.Kind("Node") {
 		return nil
 	}
@@ -53,7 +55,7 @@ func (t *tpmAdmit) Admit(a admission.Attributes) (err error) {
 		return apierrors.NewBadRequest("Resource was marked with kind Node but was unable to be converted")
 	}
 	address, err := nodeutil.GetNodeHostIP(node)
-	if err != nil{
+	if err != nil {
 		return admission.NewForbidden(a, err)
 	}
 	host := fmt.Sprintf("%s:23179", address.String())
@@ -114,7 +116,7 @@ func NewTPMAdmit(c client.Interface, config io.Reader) admission.Interface {
 		pcrconfig = configdata["tpmadmit.pcrconfig"].(string)
 	}
 	return &tpmAdmit{
-		handler: tpmhandler,
+		handler:   tpmhandler,
 		pcrconfig: pcrconfig,
 	}
 }
