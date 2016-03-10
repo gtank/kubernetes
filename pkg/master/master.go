@@ -39,6 +39,7 @@ import (
 	"k8s.io/kubernetes/pkg/registry/componentstatus"
 	configmapetcd "k8s.io/kubernetes/pkg/registry/configmap/etcd"
 	controlleretcd "k8s.io/kubernetes/pkg/registry/controller/etcd"
+	csretcd "k8s.io/kubernetes/pkg/registry/csr/etcd"
 	deploymentetcd "k8s.io/kubernetes/pkg/registry/deployment/etcd"
 	"k8s.io/kubernetes/pkg/registry/endpoint"
 	endpointsetcd "k8s.io/kubernetes/pkg/registry/endpoint/etcd"
@@ -634,6 +635,11 @@ func (m *Master) getExtensionResources(c *Config) map[string]rest.Storage {
 		ingressStorage, ingressStatusStorage := ingressetcd.NewREST(dbClient("ingresses"), storageDecorator)
 		storage["ingresses"] = ingressStorage
 		storage["ingresses/status"] = ingressStatusStorage
+	}
+	if isEnabled("csrs") {
+		csrStorage, csrStatusStorage := csretcd.NewREST(dbClient("csrs"), storageDecorator)
+		storage["csrs"] = csrStorage
+		storage["csrs/status"] = csrStatusStorage
 	}
 
 	return storage

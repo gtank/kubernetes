@@ -35,6 +35,7 @@ type ExtensionsInterface interface {
 	IngressNamespacer
 	ThirdPartyResourceNamespacer
 	ReplicaSetsNamespacer
+	CertificateSigningRequestNamespacer
 }
 
 // ExtensionsClient is used to interact with experimental Kubernetes features.
@@ -74,6 +75,10 @@ func (c *ExtensionsClient) ThirdPartyResources(namespace string) ThirdPartyResou
 
 func (c *ExtensionsClient) ReplicaSets(namespace string) ReplicaSetInterface {
 	return newReplicaSets(c, namespace)
+}
+
+func (c *ExtensionsClient) CertificateSigningRequests(namespace string) CertificateSigningRequestInterface {
+	return newCertificateSigningRequests(c, namespace)
 }
 
 // NewExtensions creates a new ExtensionsClient for the given config. This client

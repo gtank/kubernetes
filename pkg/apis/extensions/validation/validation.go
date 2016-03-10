@@ -32,17 +32,15 @@ import (
 	"k8s.io/kubernetes/pkg/util/validation/field"
 )
 
-func ValidateCertificateSigningRequest(csr *extensions.CertificateSigningRequest, fldPath *field.Path) field.ErrorList {
-	allErrs := field.ErrorList{}
+func ValidateCertificateSigningRequest(csr *extensions.CertificateSigningRequest) field.ErrorList {
 	// TODO: attempt to parse the CSR and do some sanity checks
-
+	allErrs := field.ErrorList{}
 	return allErrs
 }
 
 func ValidateCertificateSigningRequestUpdate(newCSR, oldCSR *extensions.CertificateSigningRequest) field.ErrorList {
-	allErrs := field.ErrorList{}
 	// TODO: attempt to parse the CSR and do some sanity checks
-
+	allErrs := field.ErrorList{}
 	return allErrs
 }
 
