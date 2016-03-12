@@ -51,7 +51,7 @@ type CertificateSigningRequest struct {
 
 type CertificateSigningRequestSpec struct {
 	// Raw PKCS#10 CSR data
-	CertificateRequest []byte `json:"csr"`
+	CertificateRequest string `json:"csr"`
 
 	// Fingerprint of the public key that signed the CSR
 	Fingerprint string `json:"fingerprint,omitempty"`
@@ -79,7 +79,7 @@ type CertificateSigningRequestStatus struct {
 	Message string `json:"message,omitempty"`
 
 	// If CSR was approved, this contains the issued certificate.
-	Certificate []byte `json:"certificate,omitempty"`
+	Certificate string `json:"certificate,omitempty"`
 }
 
 type CertificateSigningRequestList struct {
