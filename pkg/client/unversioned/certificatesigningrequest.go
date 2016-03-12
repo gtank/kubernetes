@@ -50,41 +50,41 @@ var _ CertificateSigningRequestInterface = &certificateSigningRequests{}
 
 func (c *certificateSigningRequests) List(opts api.ListOptions) (result *extensions.CertificateSigningRequestList, err error) {
 	result = &extensions.CertificateSigningRequestList{}
-	err = c.client.Get().Namespace(c.ns).Resource("certificatesigningrequests").VersionedParams(&opts, api.ParameterCodec).Do().Into(result)
+	err = c.client.Get().Namespace(c.ns).Resource("csrs").VersionedParams(&opts, api.ParameterCodec).Do().Into(result)
 	return
 }
 
 // Get returns information about a particular certificate signing request.
 func (c *certificateSigningRequests) Get(name string) (result *extensions.CertificateSigningRequest, err error) {
 	result = &extensions.CertificateSigningRequest{}
-	err = c.client.Get().Namespace(c.ns).Resource("certificatesigningrequests").Name(name).Do().Into(result)
+	err = c.client.Get().Namespace(c.ns).Resource("csrs").Name(name).Do().Into(result)
 	return
 }
 
 // Create creates a new certificate signing request.
 func (c *certificateSigningRequests) Create(resource *extensions.CertificateSigningRequest) (result *extensions.CertificateSigningRequest, err error) {
 	result = &extensions.CertificateSigningRequest{}
-	err = c.client.Post().Namespace(c.ns).Resource("certificatesigningrequests").Body(resource).Do().Into(result)
+	err = c.client.Post().Namespace(c.ns).Resource("csrs").Body(resource).Do().Into(result)
 	return
 }
 
 // Update updates an existing certificate signing request.
 func (c *certificateSigningRequests) Update(resource *extensions.CertificateSigningRequest) (result *extensions.CertificateSigningRequest, err error) {
 	result = &extensions.CertificateSigningRequest{}
-	err = c.client.Put().Namespace(c.ns).Resource("certificatesigningrequests").Name(resource.Name).Body(resource).Do().Into(result)
+	err = c.client.Put().Namespace(c.ns).Resource("csrs").Name(resource.Name).Body(resource).Do().Into(result)
 	return
 }
 
 // UpdateStatus updates an existing certificate signing request status
 func (c *certificateSigningRequests) UpdateStatus(resource *extensions.CertificateSigningRequest) (result *extensions.CertificateSigningRequest, err error) {
 	result = &extensions.CertificateSigningRequest{}
-	err = c.client.Put().Namespace(c.ns).Resource("certificatesigningrequests").Name(resource.Name).SubResource("status").Body(resource).Do().Into(result)
+	err = c.client.Put().Namespace(c.ns).Resource("csrs").Name(resource.Name).SubResource("status").Body(resource).Do().Into(result)
 	return
 }
 
 // Delete deletes an existing certificate signing request.
 func (c *certificateSigningRequests) Delete(name string) error {
-	return c.client.Delete().Namespace(c.ns).Resource("certificatesigningrequests").Name(name).Do().Error()
+	return c.client.Delete().Namespace(c.ns).Resource("csrs").Name(name).Do().Error()
 }
 
 // Watch returns a watch.Interface that watches the requested certificate signing requests.
@@ -92,7 +92,7 @@ func (c *certificateSigningRequests) Watch(opts api.ListOptions) (watch.Interfac
 	return c.client.Get().
 		Prefix("watch").
 		Namespace(c.ns).
-		Resource("certificatesigningrequests").
+		Resource("csrs").
 		VersionedParams(&opts, api.ParameterCodec).
 		Watch()
 }
