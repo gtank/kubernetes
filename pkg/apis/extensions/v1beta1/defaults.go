@@ -162,8 +162,8 @@ func addDefaultingFuncs(scheme *runtime.Scheme) {
 			}
 		},
 		func(obj *CertificateSigningRequest) {
-			if obj.Spec.CertificateRequest == nil {
-				obj.Spec.CertificateRequest = make([]byte, 0)
+			if obj.Spec.CertificateRequest == "" {
+				// TODO: We should not persist empty requests at all.
 			}
 		},
 	)

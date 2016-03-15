@@ -39,7 +39,7 @@ type CertificateSigningRequest struct {
 
 type CertificateSigningRequestSpec struct {
 	// Raw PKCS#10 CSR data
-	CertificateRequest string `json:"csr"`
+	CertificateRequest string `json:"request"`
 
 	// Fingerprint of the public key that signed the CSR
 	Fingerprint string `json:"fingerprint,omitempty"`

@@ -56,7 +56,7 @@ func (CertificateSigningRequest) SwaggerDoc() map[string]string {
 }
 
 var map_CertificateSigningRequestSpec = map[string]string{
-	"csr":         "Raw PKCS#10 CSR data",
+	"request":     "Raw PKCS#10 CSR data",
 	"fingerprint": "Fingerprint of the public key that signed the CSR",
 	"subject":     "Subject fields from the CSR",
 	"hostnames":   "DNS SANs from the CSR",

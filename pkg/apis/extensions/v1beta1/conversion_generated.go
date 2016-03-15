@@ -2508,9 +2508,7 @@ func autoConvert_extensions_CertificateSigningRequestSpec_To_v1beta1_Certificate
 	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
 		defaulting.(func(*extensions.CertificateSigningRequestSpec))(in)
 	}
-	if err := conversion.ByteSliceCopy(&in.CertificateRequest, &out.CertificateRequest, s); err != nil {
-		return err
-	}
+	out.CertificateRequest = in.CertificateRequest
 	out.Fingerprint = in.Fingerprint
 	if err := s.Convert(&in.Subject, &out.Subject, 0); err != nil {
 		return err
@@ -2553,9 +2551,7 @@ func autoConvert_extensions_CertificateSigningRequestStatus_To_v1beta1_Certifica
 	out.Status = v1.ConditionStatus(in.Status)
 	out.Reason = in.Reason
 	out.Message = in.Message
-	if err := conversion.ByteSliceCopy(&in.Certificate, &out.Certificate, s); err != nil {
-		return err
-	}
+	out.Certificate = in.Certificate
 	return nil
 }
 
@@ -3794,9 +3790,7 @@ func autoConvert_v1beta1_CertificateSigningRequestSpec_To_extensions_Certificate
 	if defaulting, found := s.DefaultingInterface(reflect.TypeOf(*in)); found {
 		defaulting.(func(*CertificateSigningRequestSpec))(in)
 	}
-	if err := conversion.ByteSliceCopy(&in.CertificateRequest, &out.CertificateRequest, s); err != nil {
-		return err
-	}
+	out.CertificateRequest = in.CertificateRequest
 	out.Fingerprint = in.Fingerprint
 	if err := s.Convert(&in.Subject, &out.Subject, 0); err != nil {
 		return err
@@ -3839,9 +3833,7 @@ func autoConvert_v1beta1_CertificateSigningRequestStatus_To_extensions_Certifica
 	out.Status = api.ConditionStatus(in.Status)
 	out.Reason = in.Reason
 	out.Message = in.Message
-	if err := conversion.ByteSliceCopy(&in.Certificate, &out.Certificate, s); err != nil {
-		return err
-	}
+	out.Certificate = in.Certificate
 	return nil
 }
 

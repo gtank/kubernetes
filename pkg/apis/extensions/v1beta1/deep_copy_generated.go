@@ -1000,14 +1000,7 @@ func deepCopy_v1beta1_CertificateSigningRequestList(in CertificateSigningRequest
 }
 
 func deepCopy_v1beta1_CertificateSigningRequestSpec(in CertificateSigningRequestSpec, out *CertificateSigningRequestSpec, c *conversion.Cloner) error {
-	if in.CertificateRequest != nil {
-		out.CertificateRequest = make([]uint8, len(in.CertificateRequest))
-		for i := range in.CertificateRequest {
-			out.CertificateRequest[i] = in.CertificateRequest[i]
-		}
-	} else {
-		out.CertificateRequest = nil
-	}
+	out.CertificateRequest = in.CertificateRequest
 	out.Fingerprint = in.Fingerprint
 	if newVal, err := c.DeepCopy(in.Subject); err != nil {
 		return err
@@ -1045,14 +1038,7 @@ func deepCopy_v1beta1_CertificateSigningRequestStatus(in CertificateSigningReque
 	out.Status = in.Status
 	out.Reason = in.Reason
 	out.Message = in.Message
-	if in.Certificate != nil {
-		out.Certificate = make([]uint8, len(in.Certificate))
-		for i := range in.Certificate {
-			out.Certificate[i] = in.Certificate[i]
-		}
-	} else {
-		out.Certificate = nil
-	}
+	out.Certificate = in.Certificate
 	return nil
 }
 
