@@ -533,3 +533,26 @@ func (s *StoreToPVCFetcher) GetPersistentVolumeClaimInfo(namespace string, id st
 
 	return o.(*api.PersistentVolumeClaim), nil
 }
+
+// StoreToCSRLister gives a store List and Exists methods. The store must
+// contain only CertificateSigningRequests.
+type StoreToCSRLister struct {
+	Store
+}
+
+// Exists checks if the given CSR exists in the store.
+func (s *StoreToCSRLister) Exists(csr *extensions.CertificateSigningRequest) (bool, error) {
+	_, exists, err := s.Store.Get(csr)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+// List lists all jobs in the store.
+func (s *StoreToCSRLister) List() (csrs extensions.CertificateSigningRequestList, err error) {
+	for _, c := range s.Store.List() {
+		csrs.Items = append(csrs.Items, *(c.(*extensions.CertificateSigningRequest)))
+	}
+	return csrs, nil
+}

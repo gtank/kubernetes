@@ -43,6 +43,7 @@ import (
 	"k8s.io/kubernetes/pkg/client/unversioned/clientcmd"
 	"k8s.io/kubernetes/pkg/cloudprovider"
 	"k8s.io/kubernetes/pkg/controller"
+	"k8s.io/kubernetes/pkg/controller/certificate"
 	"k8s.io/kubernetes/pkg/controller/daemon"
 	"k8s.io/kubernetes/pkg/controller/deployment"
 	endpointcontroller "k8s.io/kubernetes/pkg/controller/endpoint"
@@ -277,6 +278,11 @@ func StartControllers(s *options.CMServer, kubeClient *client.Client, kubeconfig
 			glog.Infof("Starting deployment controller")
 			go deployment.NewDeploymentController(clientset.NewForConfigOrDie(client.AddUserAgent(kubeconfig, "deployment-controller")), ResyncPeriod(s)).
 				Run(s.ConcurrentDeploymentSyncs, util.NeverStop)
+		}
+
+		if containsResource(resources, "csrs") {
+			glog.Infof("Starting certificate controller")
+			go certificate.NewCertificateController(clientset.NewForConfigOrDie(client.AddUserAgent(kubeconfig, "certificate-controller")), ResyncPeriod(s)).Run(s.ConcurrentCertificateSyncs, util.NeverStop)
 		}
 	}
 
