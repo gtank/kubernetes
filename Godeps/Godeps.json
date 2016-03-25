@@ -144,6 +144,71 @@
 			"Rev": "3b6feb5cf32f573fb124905de36a54c24ee14ac1"
 		},
 		{
+			"ImportPath": "github.com/cloudflare/cfssl/api",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/auth",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/certdb",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/cli",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/config",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/crypto/pkcs7",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/csr",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/errors",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/helpers",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/info",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/log",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/ocsp/config",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
+			"ImportPath": "github.com/cloudflare/cfssl/signer",
+			"Comment": "1.2.0-2-g92f037e",
+			"Rev": "92f037e39eb103fb30f9151be40d9ed267fc4ae2"
+		},
+		{
 			"ImportPath": "github.com/codegangsta/negroni",
 			"Comment": "v0.1-62-g8d75e11",
 			"Rev": "8d75e11374a1928608c906fe745b538483e7aeb2"
@@ -425,7 +490,6 @@
 		},
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",
-			"Comment": "0.2.1-728-g1399676",
 			"Rev": "299d728486342c894e7fafd68e3a4b89623bef1d"
 		},
 		{
@@ -672,6 +736,10 @@
 			"Rev": "9aa348ff5e191fcf3eccd59e5a434022aca77b87"
 		},
 		{
+			"ImportPath": "github.com/google/certificate-transparency/go",
+			"Rev": "af98904302724c29aa6659ca372d41c9687de2b7"
+		},
+		{
 			"ImportPath": "github.com/google/gofuzz",
 			"Rev": "bbcb9da2d746f8bdbd6a936686a0a6067ada0ec5"
 		},
@@ -814,6 +882,10 @@
 			"Rev": "740c764bc6149d3f1806231418adb9f52c11bcbf"
 		},
 		{
+			"ImportPath": "github.com/mreiferson/go-httpclient",
+			"Rev": "63fe23f7434723dc904c901043af07931f293c47"
+		},
+		{
 			"ImportPath": "github.com/mvdan/xurls",
 			"Comment": "v0.8.0-14-g1b768d7",
 			"Rev": "1b768d7c393abd8e8dda1458385a57becd4b2d4e"
@@ -948,15 +1020,23 @@
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
-			"Rev": "c84e1f8e3a7e322d497cd16c0e8a13c7e127baf3"
+			"Rev": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/blowfish",
-			"Rev": "c84e1f8e3a7e322d497cd16c0e8a13c7e127baf3"
+			"Rev": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/curve25519",
+			"Rev": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/pkcs12",
+			"Rev": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/ssh",
-			"Rev": "c84e1f8e3a7e322d497cd16c0e8a13c7e127baf3"
+			"Rev": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6"
 		},
 		{
 			"ImportPath": "golang.org/x/exp/inotify",
@@ -1041,7 +1121,7 @@
 		},
 		{
 			"ImportPath": "k8s.io/heapster/api/v1/types",
-			"Comment": "v0.19.1",
+			"Comment": "v0.19.1-44-g0991ac5",
 			"Rev": "0991ac528ea24aae194e45d6dcf01896cb42cbea"
 		},
 		{
