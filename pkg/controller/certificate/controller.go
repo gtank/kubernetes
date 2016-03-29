@@ -21,18 +21,22 @@ import (
 
 	"github.com/cloudflare/cfssl/cli"
 	"github.com/cloudflare/cfssl/config"
+	"github.com/cloudflare/cfssl/signer"
 	"github.com/cloudflare/cfssl/signer/local"
 	"github.com/golang/glog"
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	"k8s.io/kubernetes/pkg/client/cache"
+	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/release_1_1"
 	"k8s.io/kubernetes/pkg/client/record"
+	unversioned_legacy "k8s.io/kubernetes/pkg/client/typed/generated/legacy/unversioned"
 	"k8s.io/kubernetes/pkg/controller"
 	"k8s.io/kubernetes/pkg/controller/framework"
 	"k8s.io/kubernetes/pkg/runtime"
 	"k8s.io/kubernetes/pkg/util"
 	utilruntime "k8s.io/kubernetes/pkg/util/runtime"
 	"k8s.io/kubernetes/pkg/util/workqueue"
+	"k8s.io/kubernetes/pkg/watch"
 )
 
 const (
@@ -71,7 +75,7 @@ func NewCertificateController(kubeClient clientset.Interface, resyncPeriod contr
 			ListFunc: func(options api.ListOptions) (runtime.Object, error) {
 				return cc.kubeClient.Extensions().CertificateSigningRequests(api.NamespaceAll).List(options)
 			},
-			WatchFunc: func(options api.ListOptions) (runtime.Object, error) {
+			WatchFunc: func(options api.ListOptions) (watch.Interface, error) {
 				return cc.kubeClient.Extensions().CertificateSigningRequests(api.NamespaceAll).Watch(options)
 			},
 		},
@@ -96,6 +100,7 @@ func NewCertificateController(kubeClient clientset.Interface, resyncPeriod contr
 		},
 	)
 	cc.syncHandler = cc.maybeSignCertificate
+	return cc
 }
 
 // Run the main goroutine responsible for watching and syncing jobs.
@@ -171,12 +176,13 @@ func (cc *CertificateController) maybeSignCertificate(key string) error {
 		Default: config.DefaultConfig(),
 	}
 
-	signer, err := local.NewSignerFromFile(caFile, caKeyFile, policy)
-	req := signer.SignRequest{Request: csr.CertificateRequest}
-	certBytes, err := signer.Sign(req)
+	sign, err := local.NewSignerFromFile(caFile, caKeyFile, policy)
+	req := signer.SignRequest{Request: csr.Spec.CertificateRequest}
+	certBytes, err := sign.Sign(req)
 	if err != nil {
 		glog.Errorf("Unable to sign csr %v: %v", key, err)
 		return err
 	}
-	cli.PrintCert(nil, []byte(csr.CertificateRequest), certBytes)
+	cli.PrintCert(nil, []byte(csr.Spec.CertificateRequest), certBytes)
+	return nil
 }

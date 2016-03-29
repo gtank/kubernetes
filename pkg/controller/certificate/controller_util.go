@@ -31,7 +31,7 @@ import (
 // DecodeCertificateRequest decodes and validates a PEM-encoded Certificate
 // Signing Request. It returns the decoded request bytes if both operations are
 // successful.
-func DecodeCertificateRequest(encoded string) ([]byte, error) {
+func DecodeCertificateRequest(encoded []byte) ([]byte, error) {
 	block, _ := pem.Decode(encoded)
 	if block == nil || block.Type != "CERTIFICATE REQUEST" {
 		return nil, fmt.Errorf("could not decode PEM block type %s", block.Type)
