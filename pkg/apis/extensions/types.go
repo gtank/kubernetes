@@ -37,6 +37,8 @@ import (
 	"k8s.io/kubernetes/pkg/util/intstr"
 )
 
+// +genclient=true
+
 // Describes a certificate signing request
 type CertificateSigningRequest struct {
 	unversioned.TypeMeta `json:",inline"`
