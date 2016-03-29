@@ -282,7 +282,7 @@ func StartControllers(s *options.CMServer, kubeClient *client.Client, kubeconfig
 
 		if containsResource(resources, "csrs") {
 			glog.Infof("Starting certificate controller")
-			go certificate.NewCertificateController(clientset.NewForConfigOrDie(client.AddUserAgent(kubeconfig, "certificate-controller")), ResyncPeriod(s)).Run(s.ConcurrentCertificateSyncs, util.NeverStop)
+			go certificate.NewCertificateController(clientset.NewForConfigOrDie(client.AddUserAgent(kubeconfig, "certificate-controller")), s.CertificateControllerSyncPeriod).Run(s.ConcurrentCertificateSyncs, util.NeverStop)
 		}
 	}
 

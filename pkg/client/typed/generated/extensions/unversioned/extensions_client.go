@@ -23,6 +23,7 @@ import (
 )
 
 type ExtensionsInterface interface {
+	CertificateSigningRequestsGetter
 	DaemonSetsGetter
 	DeploymentsGetter
 	HorizontalPodAutoscalersGetter
@@ -36,6 +37,10 @@ type ExtensionsInterface interface {
 // ExtensionsClient is used to interact with features provided by the Extensions group.
 type ExtensionsClient struct {
 	*unversioned.RESTClient
+}
+
+func (c *ExtensionsClient) CertificateSigningRequests(namespace string) CertificateSigningRequestInterface {
+	return newCertificateSigningRequests(c, namespace)
 }
 
 func (c *ExtensionsClient) DaemonSets(namespace string) DaemonSetInterface {

@@ -16,6 +16,8 @@ limitations under the License.
 
 package unversioned
 
+type CertificateSigningRequestExpansion interface{}
+
 type DaemonSetExpansion interface{}
 
 type HorizontalPodAutoscalerExpansion interface{}
@@ -24,6 +26,6 @@ type IngressExpansion interface{}
 
 type JobExpansion interface{}
 
-type ThirdPartyResourceExpansion interface{}
-
 type ReplicaSetExpansion interface{}
+
+type ThirdPartyResourceExpansion interface{}

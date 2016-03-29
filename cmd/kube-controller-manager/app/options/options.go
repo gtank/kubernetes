@@ -43,6 +43,7 @@ type CMServer struct {
 	ConcurrentJobSyncs                int
 	ConcurrentResourceQuotaSyncs      int
 	ConcurrentDeploymentSyncs         int
+	ConcurrentCertificateSyncs        int
 	ServiceSyncPeriod                 time.Duration
 	NodeSyncPeriod                    time.Duration
 	ResourceQuotaSyncPeriod           time.Duration
@@ -52,6 +53,7 @@ type CMServer struct {
 	TerminatedPodGCThreshold          int
 	HorizontalPodAutoscalerSyncPeriod time.Duration
 	DeploymentControllerSyncPeriod    time.Duration
+	CertificateControllerSyncPeriod   time.Duration
 	MinResyncPeriod                   time.Duration
 	RegisterRetryCount                int
 	NodeMonitorGracePeriod            time.Duration
@@ -102,6 +104,7 @@ func NewCMServer() *CMServer {
 		ConcurrentJobSyncs:                5,
 		ConcurrentResourceQuotaSyncs:      5,
 		ConcurrentDeploymentSyncs:         5,
+		ConcurrentCertificateSyncs:        2,
 		ServiceSyncPeriod:                 5 * time.Minute,
 		NodeSyncPeriod:                    10 * time.Second,
 		ResourceQuotaSyncPeriod:           5 * time.Minute,
@@ -109,6 +112,7 @@ func NewCMServer() *CMServer {
 		PVClaimBinderSyncPeriod:           10 * time.Minute,
 		HorizontalPodAutoscalerSyncPeriod: 30 * time.Second,
 		DeploymentControllerSyncPeriod:    30 * time.Second,
+		CertificateControllerSyncPeriod:   30 * time.Second,
 		MinResyncPeriod:                   12 * time.Hour,
 		RegisterRetryCount:                10,
 		PodEvictionTimeout:                5 * time.Minute,
@@ -142,6 +146,7 @@ func (s *CMServer) AddFlags(fs *pflag.FlagSet) {
 	fs.IntVar(&s.ConcurrentRCSyncs, "concurrent_rc_syncs", s.ConcurrentRCSyncs, "The number of replication controllers that are allowed to sync concurrently. Larger number = more reponsive replica management, but more CPU (and network) load")
 	fs.IntVar(&s.ConcurrentResourceQuotaSyncs, "concurrent-resource-quota-syncs", s.ConcurrentResourceQuotaSyncs, "The number of resource quotas that are allowed to sync concurrently. Larger number = more responsive quota management, but more CPU (and network) load")
 	fs.IntVar(&s.ConcurrentDeploymentSyncs, "concurrent-deployment-syncs", s.ConcurrentDeploymentSyncs, "The number of deployment objects that are allowed to sync concurrently. Larger number = more reponsive deployments, but more CPU (and network) load")
+	fs.IntVar(&s.ConcurrentCertificateSyncs, "concurrent-certificate-syncs", s.ConcurrentCertificateSyncs, "The number of certificate objects that are allowed to sync concurrently. Larger number = faster certificate issuance, but more CPU (and network) load")
 	fs.DurationVar(&s.ServiceSyncPeriod, "service-sync-period", s.ServiceSyncPeriod, "The period for syncing services with their external load balancers")
 	fs.DurationVar(&s.NodeSyncPeriod, "node-sync-period", s.NodeSyncPeriod, ""+
 		"The period for syncing nodes from cloudprovider. Longer periods will result in "+
@@ -160,6 +165,7 @@ func (s *CMServer) AddFlags(fs *pflag.FlagSet) {
 	fs.IntVar(&s.TerminatedPodGCThreshold, "terminated-pod-gc-threshold", s.TerminatedPodGCThreshold, "Number of terminated pods that can exist before the terminated pod garbage collector starts deleting terminated pods. If <= 0, the terminated pod garbage collector is disabled.")
 	fs.DurationVar(&s.HorizontalPodAutoscalerSyncPeriod, "horizontal-pod-autoscaler-sync-period", s.HorizontalPodAutoscalerSyncPeriod, "The period for syncing the number of pods in horizontal pod autoscaler.")
 	fs.DurationVar(&s.DeploymentControllerSyncPeriod, "deployment-controller-sync-period", s.DeploymentControllerSyncPeriod, "Period for syncing the deployments.")
+	fs.DurationVar(&s.CertificateControllerSyncPeriod, "certificate-controller-sync-period", s.CertificateControllerSyncPeriod, "Period for syncing certificate requests.")
 	fs.DurationVar(&s.PodEvictionTimeout, "pod-eviction-timeout", s.PodEvictionTimeout, "The grace period for deleting pods on failed nodes.")
 	fs.Float32Var(&s.DeletingPodsQps, "deleting-pods-qps", 0.1, "Number of nodes per second on which pods are deleted in case of node failure.")
 	fs.IntVar(&s.DeletingPodsBurst, "deleting-pods-burst", 10, "Number of nodes on which pods are bursty deleted in case of node failure. For more details look into RateLimiter.")

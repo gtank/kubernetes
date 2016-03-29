@@ -58,7 +58,7 @@ type CertificateController struct {
 	queue *workqueue.Type
 }
 
-func NewCertificateController(kubeClient clientset.Interface, resyncPeriod controller.ResyncPeriodFunc) *CertificateController {
+func NewCertificateController(kubeClient clientset.Interface, syncPeriod time.Duration) *CertificateController {
 	// Send events to the apiserver
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(glog.Infof)
@@ -80,7 +80,7 @@ func NewCertificateController(kubeClient clientset.Interface, resyncPeriod contr
 			},
 		},
 		&extensions.CertificateSigningRequest{},
-		CertificateResyncPeriod,
+		syncPeriod,
 		framework.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				csr := obj.(*extensions.CertificateSigningRequest)
@@ -108,7 +108,7 @@ func (cc *CertificateController) Run(workers int, stopCh <-chan struct{}) {
 	defer utilruntime.HandleCrash()
 	glog.Infof("Starting certificate controller manager")
 	for i := 0; i < workers; i++ {
-		go util.Until(cc.worker, time.Second, stopCh)
+		go util.Until(cc.worker, 1*time.Second, stopCh)
 	}
 	<-stopCh
 	glog.Infof("Shutting down certificate controller")

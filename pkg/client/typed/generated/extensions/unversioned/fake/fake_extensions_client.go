@@ -25,6 +25,10 @@ type FakeExtensions struct {
 	*core.Fake
 }
 
+func (c *FakeExtensions) CertificateSigningRequests(namespace string) unversioned.CertificateSigningRequestInterface {
+	return &FakeCertificateSigningRequests{c, namespace}
+}
+
 func (c *FakeExtensions) DaemonSets(namespace string) unversioned.DaemonSetInterface {
 	return &FakeDaemonSets{c, namespace}
 }
