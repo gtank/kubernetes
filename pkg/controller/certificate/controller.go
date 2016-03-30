@@ -106,6 +106,7 @@ func NewCertificateController(kubeClient clientset.Interface, syncPeriod time.Du
 // Run the main goroutine responsible for watching and syncing jobs.
 func (cc *CertificateController) Run(workers int, stopCh <-chan struct{}) {
 	defer utilruntime.HandleCrash()
+	go cc.csrController.Run(stopCh)
 	glog.Infof("Starting certificate controller manager")
 	for i := 0; i < workers; i++ {
 		go util.Until(cc.worker, 1*time.Second, stopCh)
