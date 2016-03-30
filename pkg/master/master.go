@@ -36,10 +36,10 @@ import (
 	"k8s.io/kubernetes/pkg/healthz"
 	kubeletclient "k8s.io/kubernetes/pkg/kubelet/client"
 	"k8s.io/kubernetes/pkg/master/ports"
+	csretcd "k8s.io/kubernetes/pkg/registry/certificate/etcd"
 	"k8s.io/kubernetes/pkg/registry/componentstatus"
 	configmapetcd "k8s.io/kubernetes/pkg/registry/configmap/etcd"
 	controlleretcd "k8s.io/kubernetes/pkg/registry/controller/etcd"
-	csretcd "k8s.io/kubernetes/pkg/registry/csr/etcd"
 	deploymentetcd "k8s.io/kubernetes/pkg/registry/deployment/etcd"
 	"k8s.io/kubernetes/pkg/registry/endpoint"
 	endpointsetcd "k8s.io/kubernetes/pkg/registry/endpoint/etcd"
@@ -636,10 +636,10 @@ func (m *Master) getExtensionResources(c *Config) map[string]rest.Storage {
 		storage["ingresses"] = ingressStorage
 		storage["ingresses/status"] = ingressStatusStorage
 	}
-	if isEnabled("csrs") {
-		csrStorage, csrStatusStorage := csretcd.NewREST(dbClient("csrs"), storageDecorator)
-		storage["csrs"] = csrStorage
-		storage["csrs/status"] = csrStatusStorage
+	if isEnabled("certificatesigningrequests") {
+		csrStorage, csrStatusStorage := csretcd.NewREST(dbClient("certificatesigningrequests"), storageDecorator)
+		storage["certificatesigningrequests"] = csrStorage
+		storage["certificatesigningrequests/status"] = csrStatusStorage
 	}
 
 	return storage

@@ -21,7 +21,6 @@ import (
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	"k8s.io/kubernetes/pkg/fields"
 	"k8s.io/kubernetes/pkg/labels"
-	"k8s.io/kubernetes/pkg/registry/csr"
 	"k8s.io/kubernetes/pkg/registry/generic"
 	etcdgeneric "k8s.io/kubernetes/pkg/registry/generic/etcd"
 	"k8s.io/kubernetes/pkg/runtime"
@@ -35,7 +34,7 @@ type REST struct {
 
 // NewREST returns a registry which will store CertificateSigningRequest in the given helper
 func NewREST(s storage.Interface, storageDecorator generic.StorageDecorator) (*REST, *StatusREST) {
-	prefix := "/csrs"
+	prefix := "/certificatesigningrequests"
 
 	newListFunc := func() runtime.Object { return &extensions.CertificateSigningRequestList{} }
 	storageInterface := storageDecorator(s, 1000, &extensions.CertificateSigningRequest{}, prefix, csr.Strategy, newListFunc)
@@ -55,7 +54,7 @@ func NewREST(s storage.Interface, storageDecorator generic.StorageDecorator) (*R
 		PredicateFunc: func(label labels.Selector, field fields.Selector) generic.Matcher {
 			return csr.Matcher(label, field)
 		},
-		QualifiedResource: extensions.Resource("csrs"),
+		QualifiedResource: extensions.Resource("certificatesigningrequests"),
 		CreateStrategy:    csr.Strategy,
 		UpdateStrategy:    csr.Strategy,
 
