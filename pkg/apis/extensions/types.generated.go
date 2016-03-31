@@ -455,7 +455,7 @@ func (x *CertificateSigningRequestSpec) CodecEncodeSelf(e *codec1978.Encoder) {
 				}
 			} else {
 				z.EncSendContainerState(codecSelfer_containerMapKey1234)
-				r.EncodeString(codecSelferC_UTF81234, string("csr"))
+				r.EncodeString(codecSelferC_UTF81234, string("request"))
 				z.EncSendContainerState(codecSelfer_containerMapValue1234)
 				yym36 := z.EncBinary()
 				_ = yym36
@@ -678,7 +678,7 @@ func (x *CertificateSigningRequestSpec) codecDecodeSelfFromMap(l int, d *codec19
 		yys56 := string(yys56Slc)
 		z.DecSendContainerState(codecSelfer_containerMapValue1234)
 		switch yys56 {
-		case "csr":
+		case "request":
 			if r.TryDecodeAsNil() {
 				x.CertificateRequest = ""
 			} else {
