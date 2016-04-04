@@ -55,18 +55,32 @@ type CertificateController struct {
 	updateHandler func(csr *extensions.CertificateSigningRequest) error
 	syncHandler   func(csrKey string) error
 
+	signer *local.Signer
+
 	queue *workqueue.Type
 }
 
-func NewCertificateController(kubeClient clientset.Interface, syncPeriod time.Duration) *CertificateController {
+func NewCertificateController(kubeClient clientset.Interface, syncPeriod time.Duration, caCertFile, caKeyFile string) (*CertificateController, error) {
 	// Send events to the apiserver
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(glog.Infof)
 	eventBroadcaster.StartRecordingToSink(&unversioned_legacy.EventSinkImpl{kubeClient.Legacy().Events("")})
 
+	// Configure cfssl signer
+	// TODO: support non-default policy and remote/pkcs11 signing
+	policy := &config.Signing{
+		Default: config.DefaultConfig(),
+	}
+	ca, err := local.NewSignerFromFile(caCertFile, caKeyFile, policy)
+	if err != nil {
+		glog.Errorf("Unable to initialize signer: %v", err)
+		return nil, err
+	}
+
 	cc := &CertificateController{
 		kubeClient: kubeClient,
 		queue:      workqueue.New(),
+		signer:     ca,
 	}
 
 	// Manage the addition/update of certificate requests
@@ -100,7 +114,7 @@ func NewCertificateController(kubeClient clientset.Interface, syncPeriod time.Du
 		},
 	)
 	cc.syncHandler = cc.maybeSignCertificate
-	return cc
+	return cc, nil
 }
 
 // Run the main goroutine responsible for watching and syncing jobs.
@@ -169,17 +183,8 @@ func (cc *CertificateController) maybeSignCertificate(key string) error {
 	// 3. Generate a signed certificate, add it to /approve
 	// 4. Update the Status resource to indicate certificate is available
 
-	//func NewSignerFromFile(caFile, caKeyFile string, policy *config.Signing) (*Signer, error) {
-	caFile := "/var/lib/kubernetes/ca/root.cert"
-	caKeyFile := "/var/lib/kubernetes/ca/root.key"
-
-	policy := &config.Signing{
-		Default: config.DefaultConfig(),
-	}
-
-	sign, err := local.NewSignerFromFile(caFile, caKeyFile, policy)
 	req := signer.SignRequest{Request: csr.Spec.CertificateRequest}
-	certBytes, err := sign.Sign(req)
+	certBytes, err := cc.signer.Sign(req)
 	if err != nil {
 		glog.Errorf("Unable to sign csr %v: %v", key, err)
 		return err

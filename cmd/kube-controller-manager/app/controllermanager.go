@@ -282,7 +282,12 @@ func StartControllers(s *options.CMServer, kubeClient *client.Client, kubeconfig
 
 		if containsResource(resources, "certificatesigningrequests") {
 			glog.Infof("Starting certificate controller")
-			go certificate.NewCertificateController(clientset.NewForConfigOrDie(client.AddUserAgent(kubeconfig, "certificate-controller")), s.CertificateControllerSyncPeriod).Run(s.ConcurrentCertificateSyncs, util.NeverStop)
+			certController, err := certificate.NewCertificateController(clientset.NewForConfigOrDie(client.AddUserAgent(kubeconfig, "certificate-controller")), s.CertificateControllerSyncPeriod, s.ClusterCACert, s.ClusterCAKey)
+			if err != nil {
+				glog.Errorf("Failed to start certificate controller: %v", err)
+			} else {
+				go certController.Run(s.ConcurrentCertificateSyncs, util.NeverStop)
+			}
 		}
 	}
 

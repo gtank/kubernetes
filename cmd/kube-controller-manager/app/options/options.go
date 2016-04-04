@@ -65,6 +65,8 @@ type CMServer struct {
 	DeletingPodsBurst                 int
 	ServiceAccountKeyFile             string
 	RootCAFile                        string
+	ClusterCACert                     string
+	ClusterCAKey                      string
 
 	ClusterName       string
 	ClusterCIDR       net.IPNet
@@ -120,6 +122,8 @@ func NewCMServer() *CMServer {
 		NodeStartupGracePeriod:            60 * time.Second,
 		NodeMonitorPeriod:                 5 * time.Second,
 		ClusterName:                       "kubernetes",
+		ClusterCACert:                     "/var/lib/kubernetes/ca/ca.pem",
+		ClusterCAKey:                      "/var/lib/kubernetes/ca/ca.key",
 		TerminatedPodGCThreshold:          12500,
 		VolumeConfigFlags: VolumeConfigFlags{
 			// default values here
@@ -188,6 +192,8 @@ func (s *CMServer) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&s.Master, "master", s.Master, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
 	fs.StringVar(&s.Kubeconfig, "kubeconfig", s.Kubeconfig, "Path to kubeconfig file with authorization and master location information.")
 	fs.StringVar(&s.RootCAFile, "root-ca-file", s.RootCAFile, "If set, this root certificate authority will be included in service account's token secret. This must be a valid PEM-encoded CA bundle.")
+	fs.StringVar(&s.ClusterCACert, "cluster-ca-cert-file", s.ClusterCACert, "If set, this certificate authority will be used to issue certificates to new nodes.")
+	fs.StringVar(&s.ClusterCAKey, "cluster-ca-key-file", s.ClusterCAKey, "If set, this certificate authority will be used to issue certificates to new nodes.")
 	fs.Float32Var(&s.KubeAPIQPS, "kube-api-qps", s.KubeAPIQPS, "QPS to use while talking with kubernetes apiserver")
 	fs.IntVar(&s.KubeAPIBurst, "kube-api-burst", s.KubeAPIBurst, "Burst to use while talking with kubernetes apiserver")
 	leaderelection.BindFlags(&s.LeaderElection, fs)
