@@ -19,7 +19,6 @@ package certificate
 import (
 	"time"
 
-	"github.com/cloudflare/cfssl/cli"
 	"github.com/cloudflare/cfssl/config"
 	"github.com/cloudflare/cfssl/signer"
 	"github.com/cloudflare/cfssl/signer/local"
@@ -37,11 +36,6 @@ import (
 	utilruntime "k8s.io/kubernetes/pkg/util/runtime"
 	"k8s.io/kubernetes/pkg/util/workqueue"
 	"k8s.io/kubernetes/pkg/watch"
-)
-
-const (
-	// Periodically check for new certificate requests
-	CertificateResyncPeriod = 15 * time.Second
 )
 
 type CertificateController struct {
@@ -180,15 +174,16 @@ func (cc *CertificateController) maybeSignCertificate(key string) error {
 	// At this point, the controller needs to:
 	// 1. Derive information from the CSR and update the Status subresource
 	// 2. Check for the approve subresource. If CSR was approved, then
-	// 3. Generate a signed certificate, add it to /approve
+	// 3. Generate a signed certificate, add it to /status
 	// 4. Update the Status resource to indicate certificate is available
 
 	req := signer.SignRequest{Request: csr.Spec.CertificateRequest}
-	certBytes, err := cc.signer.Sign(req)
+	_, err := cc.signer.Sign(req)
 	if err != nil {
 		glog.Errorf("Unable to sign csr %v: %v", key, err)
 		return err
 	}
-	cli.PrintCert(nil, []byte(csr.Spec.CertificateRequest), certBytes)
+
+	// cc.updateCertificateRequestStatus(csr)
 	return nil
 }

@@ -22,6 +22,7 @@ import (
 	"k8s.io/kubernetes/pkg/api/resource"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/api/v1"
+	"k8s.io/kubernetes/pkg/auth/user"
 	"k8s.io/kubernetes/pkg/util/intstr"
 )
 
@@ -38,8 +39,28 @@ type CertificateSigningRequest struct {
 }
 
 type CertificateSigningRequestSpec struct {
-	// Raw PKCS#10 CSR data
+	// PKCS#10 CSR data. This is immutable after creation.
 	CertificateRequest string `json:"request"`
+
+	// Identifier for the user making the request. Immutable after creation.
+	User user.Info `json:"user,omitempty"`
+
+	// Extra information the node wishes to send with the request
+	ExtraInfo []string `json:"extrainfo,omitempty"`
+}
+
+// Status information is immutable and derived from the signed CSR.
+type CertificateSigningRequestStatus struct {
+	// Indicates whether CSR has a response yet. Default is Unknown. Status
+	// is True for approval and False for rejections.
+	Status v1.ConditionStatus
+
+	// If CSR was rejected, these contain the reason why (if any was supplied).
+	Reason  string `json:"reason,omitempty"`
+	Message string `json:"message,omitempty"`
+
+	// If CSR was approved, this contains the issued certificate.
+	Certificate string `json:"certificate,omitempty"`
 
 	// Fingerprint of the public key that signed the CSR
 	Fingerprint string `json:"fingerprint,omitempty"`
@@ -52,22 +73,6 @@ type CertificateSigningRequestSpec struct {
 
 	// IP SANs from the CSR
 	IPAddresses []string `json:"ipaddresses,omitempty"`
-
-	// Extra information the node wishes to send with the request
-	ExtraInfo []string `json:"extrainfo,omitempty"`
-}
-
-type CertificateSigningRequestStatus struct {
-	// Indicates whether CSR has a response yet. Default is Unknown. Status
-	// is True for approval and False for rejections.
-	Status v1.ConditionStatus
-
-	// If CSR was rejected, these contain the reason why (if any was supplied).
-	Reason  string `json:"reason,omitempty"`
-	Message string `json:"message,omitempty"`
-
-	// If CSR was approved, this contains the issued certificate.
-	Certificate string `json:"certificate,omitempty"`
 }
 
 type CertificateSigningRequestList struct {
