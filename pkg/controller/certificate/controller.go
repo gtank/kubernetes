@@ -178,7 +178,7 @@ func (cc *CertificateController) maybeSignCertificate(key string) error {
 	// 4. Update the Status resource to indicate certificate is available
 
 	req := signer.SignRequest{Request: csr.Spec.CertificateRequest}
-	_, err := cc.signer.Sign(req)
+	_, err = cc.signer.Sign(req)
 	if err != nil {
 		glog.Errorf("Unable to sign csr %v: %v", key, err)
 		return err
