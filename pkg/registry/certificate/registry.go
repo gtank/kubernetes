@@ -54,6 +54,10 @@ func (s *storage) ListCSRs(ctx api.Context, options *api.ListOptions) (*extensio
 }
 
 func (s *storage) CreateCSR(ctx api.Context, csr *extensions.CertificateSigningRequest) error {
+	// Inject user.Info from request context if available.
+	if user, ok := api.UserFrom(ctx); ok {
+		csr.Spec.User = user
+	}
 	_, err := s.Create(ctx, csr)
 	return err
 }
