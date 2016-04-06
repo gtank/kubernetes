@@ -51,14 +51,18 @@ func (csrStrategy) AllowCreateOnUpdate() bool {
 
 // PrepareForCreate clears fields that are not allowed to be set by end users on creation.
 func (csrStrategy) PrepareForCreate(obj runtime.Object) {
-	_ = obj.(*extensions.CertificateSigningRequest)
-	//TODO(gtank): Restrict derived fields & possibly derive them here.
+	// TODO: users cannot create a Status of "approved" or spoof any derived information
+	// newCSR = obj.(*extensions.CertificateSigningRequest)
+	// newCSR.Status = extensions.CeritficateSigningRequestStatus{}
 }
 
 // PrepareForUpdate clears fields that are not allowed to be set by end users on update.
 func (csrStrategy) PrepareForUpdate(obj, old runtime.Object) {
-	_ = obj.(*extensions.CertificateSigningRequest)
-	_ = old.(*extensions.CertificateSigningRequest)
+	// TODO: users cannot modify a request after it has been submitted
+	// newCSR = obj.(*extensions.CertificateSigningRequest)
+	// oldCSR = old.(*extensions.CertificateSigningRequest)
+	// newCSR.Spec = oldCSR.Spec
+	// newCSR.Status = oldCSR.Status
 }
 
 // Validate validates a new CSR.
@@ -77,6 +81,11 @@ func (csrStrategy) ValidateUpdate(ctx api.Context, obj, old runtime.Object) fiel
 	return append(errorList, validation.ValidateCertificateSigningRequestUpdate(obj.(*extensions.CertificateSigningRequest), old.(*extensions.CertificateSigningRequest))...)
 }
 
+// If AllowUnconditionalUpdate() is true and the object specified by
+// the user does not have a resource version, then generic Update()
+// populates it with the latest version. Else, it checks that the
+// version specified by the user matches the version of latest etcd
+// object.
 func (csrStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
@@ -104,8 +113,9 @@ type csrStatusStrategy struct {
 var StatusStrategy = csrStatusStrategy{Strategy}
 
 func (csrStatusStrategy) PrepareForCreate(obj runtime.Object) {
-	_ = obj.(*extensions.CertificateSigningRequest)
-	// TODO: CSRs should not allow status to be set on create.
+	// TODO: do not allow status to be set on create
+	// newStatus = obj.(*extensions.CertificateSigningRequestStatus)
+	// newStatus = extensions.CertificateSigningRequestStatus{}
 }
 
 func (csrStatusStrategy) PrepareForUpdate(obj, old runtime.Object) {

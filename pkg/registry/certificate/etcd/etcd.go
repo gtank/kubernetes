@@ -62,7 +62,9 @@ func NewREST(s storage.Interface, storageDecorator generic.StorageDecorator) (*R
 		Storage: storageInterface,
 	}
 
-	// this is how node handles it
+	// Status subresource uses the same store and creation strategy, which
+	// only allows an empty Status. Updates to an existing status are
+	// allowed.
 	statusStore := *store
 	statusStore.UpdateStrategy = csr.StatusStrategy
 
@@ -75,7 +77,7 @@ type StatusREST struct {
 }
 
 func (r *StatusREST) New() runtime.Object {
-	return &extensions.CertificateSigningRequest{}
+	return &extensions.CertificateSigningRequestStatus{}
 }
 
 // Update alters the status subset of an object.
