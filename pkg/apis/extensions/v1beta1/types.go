@@ -32,10 +32,10 @@ type CertificateSigningRequest struct {
 	v1.ObjectMeta        `json:"metadata,omitempty"`
 
 	// Specifies the behavior of the CSR
-	Spec CertificateSigningRequestSpec
+	Spec CertificateSigningRequestSpec `json:"spec,omitempty"`
 
 	// Most recently observed status of the CSR
-	Status CertificateSigningRequestStatus
+	Status CertificateSigningRequestStatus `json:"status,omitempty"`
 }
 
 type CertificateSigningRequestSpec struct {
