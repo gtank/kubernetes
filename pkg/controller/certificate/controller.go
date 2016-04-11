@@ -150,6 +150,20 @@ func (cc *CertificateController) enqueueCertificateRequest(obj interface{}) {
 	cc.queue.Add(key)
 }
 
+func (cc *CertificateController) updateCertificateRequestStatus(csr *extensions.CertificateSigningRequest) error {
+	_, updateErr := cc.kubeClient.Extensions().CertificateSigningRequests(csr.Namespace).UpdateStatus(csr)
+	if updateErr == nil {
+		// success!
+		return nil
+	}
+	// Update the set with the latest resource version for the next poll
+	if csr, getErr := cc.kubeClient.Extensions().CertificateSigningRequests(csr.Namespace).Get(csr.Name); getErr != nil {
+		// If the GET fails, this error is bound to be more interesting than the update failure.
+		return getErr
+	}
+	return updateErr
+}
+
 // maybeSignCertificate will inspect the certificate request and, if it has
 // been approved and meets policy expectations, generate an X509 cert using the
 // cluster CA assets. If successful it will update the CSR approve subresource
@@ -172,18 +186,20 @@ func (cc *CertificateController) maybeSignCertificate(key string) error {
 	csr := obj.(*extensions.CertificateSigningRequest)
 
 	// At this point, the controller needs to:
-	// 1. Derive information from the CSR and update the Status subresource
+	// 1. Derive information from the CSR and update the Status subresource (? maybe in registry instead)
 	// 2. Check for the approve subresource. If CSR was approved, then
 	// 3. Generate a signed certificate, add it to /status
 	// 4. Update the Status resource to indicate certificate is available
 
 	req := signer.SignRequest{Request: csr.Spec.CertificateRequest}
-	_, err = cc.signer.Sign(req)
+	certBytes, err := cc.signer.Sign(req)
 	if err != nil {
 		glog.Errorf("Unable to sign csr %v: %v", key, err)
 		return err
 	}
 
-	// cc.updateCertificateRequestStatus(csr)
-	return nil
+	csr.Status.Certificate = string(certBytes)
+	csr.Status.Status = "True"
+
+	return cc.updateCertificateRequestStatus(csr)
 }
