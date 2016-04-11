@@ -77,7 +77,7 @@ type StatusREST struct {
 }
 
 func (r *StatusREST) New() runtime.Object {
-	return &extensions.CertificateSigningRequestStatus{}
+	return &extensions.CertificateSigningRequest{}
 }
 
 // Update alters the status subset of an object.
