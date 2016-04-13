@@ -51,4 +51,5 @@ func addKnownTypes(scheme *runtime.Scheme) {
 	)
 }
 
-func (obj *CertificateSigningRequest) GetObjectKind() unversioned.ObjectKind { return &obj.TypeMeta }
+func (obj *CertificateSigningRequest) GetObjectKind() unversioned.ObjectKind     { return &obj.TypeMeta }
+func (obj *CertificateSigningRequestList) GetObjectKind() unversioned.ObjectKind { return &obj.TypeMeta }

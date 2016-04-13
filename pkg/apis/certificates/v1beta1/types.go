@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package certificates
+package v1beta1
 
 import (
 	"crypto/x509/pkix"
@@ -22,6 +22,8 @@ import (
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 )
+
+// +genclient=true
 
 // Describes a certificate signing request
 type CertificateSigningRequest struct {

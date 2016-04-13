@@ -23,6 +23,8 @@ import (
 	"k8s.io/kubernetes/pkg/api/unversioned"
 )
 
+// +genclient=true
+
 // Describes a certificate signing request
 type CertificateSigningRequest struct {
 	unversioned.TypeMeta `json:",inline"`
