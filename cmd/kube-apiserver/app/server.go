@@ -42,6 +42,8 @@ import (
 	autoscalingapiv1 "k8s.io/kubernetes/pkg/apis/autoscaling/v1"
 	"k8s.io/kubernetes/pkg/apis/batch"
 	batchapiv1 "k8s.io/kubernetes/pkg/apis/batch/v1"
+	"k8s.io/kubernetes/pkg/apis/certificates"
+	certificatesapiv1beta1 "k8s.io/kubernetes/pkg/apis/certificates/v1beta1"
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	extensionsapiv1beta1 "k8s.io/kubernetes/pkg/apis/extensions/v1beta1"
 	"k8s.io/kubernetes/pkg/apiserver"
@@ -375,6 +377,23 @@ func Run(s *options.APIServer) error {
 		storageDestinations.AddAPIGroup(batch.GroupName, batchEtcdStorage)
 	}
 
+	// Configure storage destination for certificates API
+	if apiResourceConfigSource.AnyResourcesForVersionEnabled(certificatesapiv1beta1.SchemeGroupVersion) {
+		glog.Infof("Configuring certificates/v1beta1 storage destination")
+		certGroup, err := registered.Group(certificates.GroupName)
+		if err != nil {
+			glog.Fatalf("Certificates API is enabled in runtime config, but not enabled in the environment variable KUBE_API_VERSIONS. Error: %v", err)
+		}
+		if _, found := storageVersions[certGroup.GroupVersion.Group]; !found {
+			glog.Fatalf("Couldn't find the storage version for group: %q in storageVersions: %v", certGroup.GroupVersion.Group, storageVersions)
+		}
+		certEtcdStorage, err := newEtcd(api.Codecs, storageVersions[certGroup.GroupVersion.Group], "certificates/__internal", s.EtcdConfig)
+		if err != nil {
+			glog.Fatalf("Invalid certificates storage version or misconfigured etcd: %v", err)
+		}
+		storageDestinations.AddAPIGroup(certificates.GroupName, certEtcdStorage)
+	}
+
 	updateEtcdOverrides(s.EtcdServersOverrides, storageVersions, s.EtcdConfig, &storageDestinations, newEtcd)
 
 	n := s.ServiceClusterIPRange
@@ -520,10 +539,11 @@ func parseRuntimeConfig(s *options.APIServer) (genericapiserver.APIResourceConfi
 	v1GroupVersionString := "api/v1"
 	extensionsGroupVersionString := extensionsapiv1beta1.SchemeGroupVersion.String()
 	versionToResourceSpecifier := map[unversioned.GroupVersion]string{
-		apiv1.SchemeGroupVersion:                v1GroupVersionString,
-		extensionsapiv1beta1.SchemeGroupVersion: extensionsGroupVersionString,
-		batchapiv1.SchemeGroupVersion:           batchapiv1.SchemeGroupVersion.String(),
-		autoscalingapiv1.SchemeGroupVersion:     autoscalingapiv1.SchemeGroupVersion.String(),
+		apiv1.SchemeGroupVersion:                  v1GroupVersionString,
+		extensionsapiv1beta1.SchemeGroupVersion:   extensionsGroupVersionString,
+		batchapiv1.SchemeGroupVersion:             batchapiv1.SchemeGroupVersion.String(),
+		autoscalingapiv1.SchemeGroupVersion:       autoscalingapiv1.SchemeGroupVersion.String(),
+		certificatesapiv1beta1.SchemeGroupVersion: certificatesapiv1beta1.SchemeGroupVersion.String(),
 	}
 
 	resourceConfig := master.DefaultAPIResourceConfigSource()
