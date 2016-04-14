@@ -21,11 +21,11 @@ import (
 	"k8s.io/kubernetes/pkg/apis/certificates"
 	"k8s.io/kubernetes/pkg/fields"
 	"k8s.io/kubernetes/pkg/labels"
+	"k8s.io/kubernetes/pkg/registry/cachesize"
 	csrregistry "k8s.io/kubernetes/pkg/registry/certificates"
 	"k8s.io/kubernetes/pkg/registry/generic"
 	etcdgeneric "k8s.io/kubernetes/pkg/registry/generic/etcd"
 	"k8s.io/kubernetes/pkg/runtime"
-	"k8s.io/kubernetes/pkg/storage"
 )
 
 // REST implements a RESTStorage for CertificateSigningRequest against etcd
@@ -34,11 +34,11 @@ type REST struct {
 }
 
 // NewREST returns a registry which will store CertificateSigningRequest in the given helper
-func NewREST(s storage.Interface, storageDecorator generic.StorageDecorator) (*REST, *StatusREST, *ApproveREST) {
+func NewREST(opts generic.RESTOptions) (*REST, *StatusREST, *ApproveREST) {
 	prefix := "/certificatesigningrequests"
 
 	newListFunc := func() runtime.Object { return &certificates.CertificateSigningRequestList{} }
-	storageInterface := storageDecorator(s, 1000, &certificates.CertificateSigningRequest{}, prefix, csrregistry.Strategy, newListFunc)
+	storageInterface := opts.Decorator(opts.Storage, cachesize.GetWatchCacheSizeByResource(cachesize.CertificateSigningRequests), &certificates.CertificateSigningRequest{}, prefix, csrregistry.Strategy, newListFunc)
 
 	store := &etcdgeneric.Etcd{
 		NewFunc:     func() runtime.Object { return &certificates.CertificateSigningRequest{} },
@@ -55,9 +55,11 @@ func NewREST(s storage.Interface, storageDecorator generic.StorageDecorator) (*R
 		PredicateFunc: func(label labels.Selector, field fields.Selector) generic.Matcher {
 			return csrregistry.Matcher(label, field)
 		},
-		QualifiedResource: certificates.Resource("certificatesigningrequests"),
-		CreateStrategy:    csrregistry.Strategy,
-		UpdateStrategy:    csrregistry.Strategy,
+		QualifiedResource:       certificates.Resource("certificatesigningrequests"),
+		DeleteCollectionWorkers: opts.DeleteCollectionWorkers,
+
+		CreateStrategy: csrregistry.Strategy,
+		UpdateStrategy: csrregistry.Strategy,
 
 		Storage: storageInterface,
 	}
