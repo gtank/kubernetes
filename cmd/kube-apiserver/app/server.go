@@ -41,6 +41,7 @@ import (
 	autoscalingapiv1 "k8s.io/kubernetes/pkg/apis/autoscaling/v1"
 	"k8s.io/kubernetes/pkg/apis/batch"
 	batchapiv1 "k8s.io/kubernetes/pkg/apis/batch/v1"
+	certificatesapiv1beta1 "k8s.io/kubernetes/pkg/apis/certificates/v1beta1"
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	extensionsapiv1beta1 "k8s.io/kubernetes/pkg/apis/extensions/v1beta1"
 	"k8s.io/kubernetes/pkg/apiserver"
@@ -296,11 +297,12 @@ func parseRuntimeConfig(s *options.APIServer) (genericapiserver.APIResourceConfi
 	v1GroupVersionString := "api/v1"
 	extensionsGroupVersionString := extensionsapiv1beta1.SchemeGroupVersion.String()
 	versionToResourceSpecifier := map[unversioned.GroupVersion]string{
-		apiv1.SchemeGroupVersion:                v1GroupVersionString,
-		extensionsapiv1beta1.SchemeGroupVersion: extensionsGroupVersionString,
-		batchapiv1.SchemeGroupVersion:           batchapiv1.SchemeGroupVersion.String(),
-		autoscalingapiv1.SchemeGroupVersion:     autoscalingapiv1.SchemeGroupVersion.String(),
-		appsapi.SchemeGroupVersion:              appsapi.SchemeGroupVersion.String(),
+		apiv1.SchemeGroupVersion:                  v1GroupVersionString,
+		extensionsapiv1beta1.SchemeGroupVersion:   extensionsGroupVersionString,
+		batchapiv1.SchemeGroupVersion:             batchapiv1.SchemeGroupVersion.String(),
+		autoscalingapiv1.SchemeGroupVersion:       autoscalingapiv1.SchemeGroupVersion.String(),
+		appsapi.SchemeGroupVersion:                appsapi.SchemeGroupVersion.String(),
+		certificatesapiv1beta1.SchemeGroupVersion: certificatesapiv1beta1.SchemeGroupVersion.String(),
 	}
 
 	resourceConfig := master.DefaultAPIResourceConfigSource()
