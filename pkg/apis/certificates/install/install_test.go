@@ -79,7 +79,6 @@ func TestInterfacesFor(t *testing.T) {
 func TestRESTMapper(t *testing.T) {
 	gv := v1beta1.SchemeGroupVersion
 	csrGVK := gv.WithKind("CertificateSigningRequest")
-	daemonSetGVK := gv.WithKind("DaemonSet")
 
 	if gvk, err := registered.GroupOrDie(certificates.GroupName).RESTMapper.KindFor(gv.WithResource("certificatesigningrequests")); err != nil || gvk != csrGVK {
 		t.Errorf("unexpected version mapping: %v %v", gvk, err)
@@ -104,7 +103,7 @@ func TestRESTMapper(t *testing.T) {
 		}
 
 		csr := &certificates.CertificateSigningRequest{ObjectMeta: api.ObjectMeta{Name: "foo"}}
-		name, err := mapping.MetadataAccessor.Name(rc)
+		name, err := mapping.MetadataAccessor.Name(csr)
 		if err != nil {
 			t.Errorf("unexpected error: %v", err)
 		}
