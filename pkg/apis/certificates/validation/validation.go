@@ -18,6 +18,7 @@ package validation
 
 import (
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 
@@ -26,15 +27,16 @@ import (
 	"k8s.io/kubernetes/pkg/util/validation/field"
 )
 
-// validates the signature of a PEM-encoded PKCS#10 certificate signing
-// request. If this is invalid, we must not accept the CSR for further
+// validates the signature of a base64-wrapped, PEM-encoded PKCS#10 certificate
+// signing request. If this is invalid, we must not accept the CSR for further
 // processing.
 func validateSignature(obj *certificates.CertificateSigningRequest) error {
 	// extract PEM from request object
-	pemCert := []byte(obj.Spec.CertificateRequest)
-
-	// decode PEM
-	block, _ := pem.Decode(pemCert)
+	pemBytes, err := base64.StdEncoding.DecodeString(obj.Spec.CertificateRequest)
+	if err != nil {
+		return err
+	}
+	block, _ := pem.Decode(pemBytes)
 	if block == nil || block.Type != "CERTIFICATE REQUEST" {
 		return errors.New("PEM block type must be CERTIFICATE REQUEST")
 	}

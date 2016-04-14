@@ -42,7 +42,7 @@ type CertificateSigningRequest struct {
 
 // This information is immutable after the request is created.
 type CertificateSigningRequestSpec struct {
-	// Raw PKCS#10 CSR data
+	// Base64-encoded PKCS#10 CSR data
 	CertificateRequest string `json:"request"`
 
 	// Any extra information the node wishes to send with the request.
