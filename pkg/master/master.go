@@ -36,6 +36,8 @@ import (
 	autoscalingapiv1 "k8s.io/kubernetes/pkg/apis/autoscaling/v1"
 	"k8s.io/kubernetes/pkg/apis/batch"
 	batchapiv1 "k8s.io/kubernetes/pkg/apis/batch/v1"
+	"k8s.io/kubernetes/pkg/apis/certificates"
+	certificatesapiv1beta1 "k8s.io/kubernetes/pkg/apis/certificates/v1beta1"
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	extensionsapiv1beta1 "k8s.io/kubernetes/pkg/apis/extensions/v1beta1"
 	"k8s.io/kubernetes/pkg/apiserver"
@@ -44,6 +46,7 @@ import (
 	"k8s.io/kubernetes/pkg/healthz"
 	kubeletclient "k8s.io/kubernetes/pkg/kubelet/client"
 	"k8s.io/kubernetes/pkg/master/ports"
+	certificateetcd "k8s.io/kubernetes/pkg/registry/certificates/etcd"
 	"k8s.io/kubernetes/pkg/registry/componentstatus"
 	configmapetcd "k8s.io/kubernetes/pkg/registry/configmap/etcd"
 	controlleretcd "k8s.io/kubernetes/pkg/registry/controller/etcd"
@@ -335,6 +338,46 @@ func (m *Master) InstallAPIs(c *Config) {
 			Name:             batchGroupMeta.GroupVersion.Group,
 			Versions:         []unversioned.GroupVersionForDiscovery{batchGVForDiscovery},
 			PreferredVersion: batchGVForDiscovery,
+		}
+		allGroups = append(allGroups, group)
+	}
+
+	// Install certificates unless disabled.
+	if c.APIResourceConfigSource.AnyResourcesForVersionEnabled(certificatesapiv1beta1.SchemeGroupVersion) {
+		certificateResources := m.getCertificateResources(c)
+		certificatesGroupMeta := registered.GroupOrDie(certificates.GroupName)
+		// Update the preferred version as per StorageVersions in the config.
+		storageVersion, found := c.StorageVersions[certificatesGroupMeta.GroupVersion.Group]
+		if !found {
+			glog.Fatalf("Couldn't find storage version of group %v", certificatesGroupMeta.GroupVersion.Group)
+		}
+		preferedGroupVersion, err := unversioned.ParseGroupVersion(storageVersion)
+		if err != nil {
+			glog.Fatalf("Error in parsing group version %s: %v", storageVersion, err)
+		}
+		certificatesGroupMeta.GroupVersion = preferedGroupVersion
+
+		apiGroupInfo := genericapiserver.APIGroupInfo{
+			GroupMeta: *certificatesGroupMeta,
+			VersionedResourcesStorageMap: map[string]map[string]rest.Storage{
+				"v1beta1": certificateResources,
+			},
+			OptionsExternalVersion:     &registered.GroupOrDie(api.GroupName).GroupVersion,
+			Scheme:                     api.Scheme,
+			ParameterCodec:             api.ParameterCodec,
+			NegotiatedSerializer:       api.Codecs,
+			NegotiatedStreamSerializer: api.StreamCodecs,
+		}
+		apiGroupsInfo = append(apiGroupsInfo, apiGroupInfo)
+
+		certificatesGVForDiscovery := unversioned.GroupVersionForDiscovery{
+			GroupVersion: extensionsGroupMeta.GroupVersion.String(),
+			Version:      extensionsGroupMeta.GroupVersion.Version,
+		}
+		group := unversioned.APIGroup{
+			Name:             certificatesGroupMeta.GroupVersion.Group,
+			Versions:         []unversioned.GroupVersionForDiscovery{certificatesGVForDiscovery},
+			PreferredVersion: certificatesGVForDiscovery,
 		}
 		allGroups = append(allGroups, group)
 	}
@@ -773,6 +816,32 @@ func (m *Master) getAutoscalingResources(c *Config) map[string]rest.Storage {
 	if c.APIResourceConfigSource.ResourceEnabled(version.WithResource("horizontalpodautoscalers")) {
 		m.constructHPAResources(c, storage)
 	}
+	return storage
+}
+
+// getCertificateResources returns the resources for certificates API
+func (m *Master) getCertificateResources(c *Config) map[string]rest.Storage {
+	restOptions := func(resource string) generic.RESTOptions {
+		return generic.RESTOptions{
+			Storage:                 c.StorageDestinations.Get(certificates.GroupName, resource),
+			Decorator:               m.StorageDecorator(),
+			DeleteCollectionWorkers: m.deleteCollectionWorkers,
+		}
+	}
+
+	// TODO update when we support more than one version of this group
+	version := certificatesapiv1beta1.SchemeGroupVersion
+
+	storage := map[string]rest.Storage{}
+
+	csrStorage, csrStatusStorage, csrApprovalStorage := certificateetcd.NewREST(restOptions("certificatesigningrequests"))
+
+	if c.APIResourceConfigSource.ResourceEnabled(version.WithResource("certificatesigningrequests")) {
+		storage["certificatesigningrequests"] = csrStorage
+		storage["certificatesigningrequests/status"] = csrStatusStorage
+		storage["certificatesigningrequests/approve"] = csrApprovalStorage
+	}
+
 	return storage
 }
 
