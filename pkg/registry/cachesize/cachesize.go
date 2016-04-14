@@ -28,35 +28,37 @@ import (
 type Resource string
 
 const (
-	Controllers              Resource = "controllers"
-	Daemonsets               Resource = "daemonsets"
-	Deployments              Resource = "deployments"
-	Endpoints                Resource = "endpoints"
-	HorizontalPodAutoscalers Resource = "horizontalpodautoscalers"
-	Ingress                  Resource = "ingress"
-	PodDisruptionBudget      Resource = "poddisruptionbudgets"
-	PetSet                   Resource = "petset"
-	Jobs                     Resource = "jobs"
-	LimitRanges              Resource = "limitranges"
-	Namespaces               Resource = "namespaces"
-	NetworkPolicys           Resource = "networkpolicies"
-	Nodes                    Resource = "nodes"
-	PersistentVolumes        Resource = "persistentvolumes"
-	PersistentVolumeClaims   Resource = "persistentvolumeclaims"
-	Pods                     Resource = "pods"
-	PodTemplates             Resource = "podtemplates"
-	Replicasets              Resource = "replicasets"
-	ResourceQuotas           Resource = "resourcequotas"
-	ScheduledJobs            Resource = "scheduledjobs"
-	Secrets                  Resource = "secrets"
-	ServiceAccounts          Resource = "serviceaccounts"
-	Services                 Resource = "services"
+	CertificateSigningRequests Resource = "certificatesigningrequests"
+	Controllers                Resource = "controllers"
+	Daemonsets                 Resource = "daemonsets"
+	Deployments                Resource = "deployments"
+	Endpoints                  Resource = "endpoints"
+	HorizontalPodAutoscalers   Resource = "horizontalpodautoscalers"
+	Ingress                    Resource = "ingress"
+	PodDisruptionBudget        Resource = "poddisruptionbudgets"
+	PetSet                     Resource = "petset"
+	Jobs                       Resource = "jobs"
+	LimitRanges                Resource = "limitranges"
+	Namespaces                 Resource = "namespaces"
+	NetworkPolicys             Resource = "networkpolicies"
+	Nodes                      Resource = "nodes"
+	PersistentVolumes          Resource = "persistentvolumes"
+	PersistentVolumeClaims     Resource = "persistentvolumeclaims"
+	Pods                       Resource = "pods"
+	PodTemplates               Resource = "podtemplates"
+	Replicasets                Resource = "replicasets"
+	ResourceQuotas             Resource = "resourcequotas"
+	ScheduledJobs              Resource = "scheduledjobs"
+	Secrets                    Resource = "secrets"
+	ServiceAccounts            Resource = "serviceaccounts"
+	Services                   Resource = "services"
 )
 
 var watchCacheSizes map[Resource]int
 
 func init() {
 	watchCacheSizes = make(map[Resource]int)
+	watchCacheSizes[CertificateSigningRequests] = 1000
 	watchCacheSizes[Controllers] = 100
 	watchCacheSizes[Daemonsets] = 100
 	watchCacheSizes[Deployments] = 100
