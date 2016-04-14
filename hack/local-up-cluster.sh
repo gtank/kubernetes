@@ -264,6 +264,8 @@ function start_apiserver {
       --service-account-key-file="${SERVICE_ACCOUNT_KEY}" \
       --service-account-lookup="${SERVICE_ACCOUNT_LOOKUP}" \
       --admission-control="${ADMISSION_CONTROL}" \
+      --advertise-address="${API_HOST}" \
+      --bind-address="${API_HOST}" \
       --insecure-bind-address="${API_HOST}" \
       --insecure-port="${API_PORT}" \
       --etcd-servers="http://127.0.0.1:4001" \
