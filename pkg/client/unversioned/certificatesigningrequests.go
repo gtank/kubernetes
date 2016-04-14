@@ -22,12 +22,12 @@ import (
 	"k8s.io/kubernetes/pkg/watch"
 )
 
-// CertificateSigningRequestsNamespacer has methods to work with HorizontalPodAutoscaler resources in a namespace
+// CertificateSigningRequestsNamespacer has methods to work with CertificateSigningRequest resources in a namespace
 type CertificateSigningRequestsNamespacer interface {
 	CertificateSigningRequests(namespace string) CertificateSigningRequestInterface
 }
 
-// CertificateSigningRequestInterface has methods to work with HorizontalPodAutoscaler resources.
+// CertificateSigningRequestInterface has methods to work with CertificateSigningRequest resources.
 type CertificateSigningRequestInterface interface {
 	List(opts api.ListOptions) (*certificates.CertificateSigningRequestList, error)
 	Get(name string) (*certificates.CertificateSigningRequest, error)
@@ -41,12 +41,12 @@ type CertificateSigningRequestInterface interface {
 
 // certificateSigningRequests implements CertificateSigningRequestsNamespacer interface
 type certificateSigningRequests struct {
-	client *ExtensionsClient
+	client *CertificatesClient
 	ns     string
 }
 
 // newCertificateSigningRequests returns a certificateSigningRequests
-func newCertificateSigningRequests(c *ExtensionsClient, namespace string) *certificateSigningRequests {
+func newCertificateSigningRequests(c *CertificatesClient, namespace string) *certificateSigningRequests {
 	return &certificateSigningRequests{
 		client: c,
 		ns:     namespace,
@@ -60,7 +60,7 @@ func (c *certificateSigningRequests) List(opts api.ListOptions) (result *certifi
 	return
 }
 
-// Get takes the name of the certificateSigningRequest, and returns the corresponding HorizontalPodAutoscaler object, and an error if it occurs
+// Get takes the name of the certificateSigningRequest, and returns the corresponding CertificateSigningRequest object, and an error if it occurs
 func (c *certificateSigningRequests) Get(name string) (result *certificates.CertificateSigningRequest, err error) {
 	result = &certificates.CertificateSigningRequest{}
 	err = c.client.Get().Namespace(c.ns).Resource("certificatesigningrequests").Name(name).Do().Into(result)
@@ -93,8 +93,8 @@ func (c *certificateSigningRequests) UpdateStatus(certificateSigningRequest *cer
 	return
 }
 
-// UpdateStatus takes the representation of a certificateSigningRequest and updates it.  Returns the server's representation of the certificateSigningRequest, and an error, if it occurs.
-func (c *certificateSigningRequests) UpdateStatus(certificateSigningRequest *certificates.CertificateSigningRequest) (result *certificates.CertificateSigningRequest, err error) {
+// UpdateApprove takes the representation of a certificateSigningRequest and updates it.  Returns the server's representation of the certificateSigningRequest, and an error, if it occurs.
+func (c *certificateSigningRequests) UpdateApprove(certificateSigningRequest *certificates.CertificateSigningRequest) (result *certificates.CertificateSigningRequest, err error) {
 	result = &certificates.CertificateSigningRequest{}
 	err = c.client.Put().Namespace(c.ns).Resource("certificatesigningrequests").Name(certificateSigningRequest.Name).SubResource("approve").Body(certificateSigningRequest).Do().Into(result)
 	return
@@ -102,70 +102,6 @@ func (c *certificateSigningRequests) UpdateStatus(certificateSigningRequest *cer
 
 // Watch returns a watch.Interface that watches the requested certificateSigningRequests.
 func (c *certificateSigningRequests) Watch(opts api.ListOptions) (watch.Interface, error) {
-	return c.client.Get().
-		Prefix("watch").
-		Namespace(c.ns).
-		Resource("certificatesigningrequests").
-		VersionedParams(&opts, api.ParameterCodec).
-		Watch()
-}
-
-// certificateSigningRequestsV1 implements CertificateSigningRequestsNamespacer interface using AutoscalingClient internally
-type certificateSigningRequestsV1 struct {
-	client *AutoscalingClient
-	ns     string
-}
-
-// newCertificateSigningRequests returns a certificateSigningRequests
-func newCertificateSigningRequestsV1(c *AutoscalingClient, namespace string) *certificateSigningRequestsV1 {
-	return &certificateSigningRequestsV1{
-		client: c,
-		ns:     namespace,
-	}
-}
-
-// List takes label and field selectors, and returns the list of certificateSigningRequests that match those selectors.
-func (c *certificateSigningRequestsV1) List(opts api.ListOptions) (result *certificates.CertificateSigningRequestList, err error) {
-	result = &certificates.CertificateSigningRequestList{}
-	err = c.client.Get().Namespace(c.ns).Resource("certificatesigningrequests").VersionedParams(&opts, api.ParameterCodec).Do().Into(result)
-	return
-}
-
-// Get takes the name of the certificateSigningRequest, and returns the corresponding HorizontalPodAutoscaler object, and an error if it occurs
-func (c *certificateSigningRequestsV1) Get(name string) (result *certificates.CertificateSigningRequest, err error) {
-	result = &certificates.CertificateSigningRequest{}
-	err = c.client.Get().Namespace(c.ns).Resource("certificatesigningrequests").Name(name).Do().Into(result)
-	return
-}
-
-// Delete takes the name of the certificateSigningRequest and deletes it.  Returns an error if one occurs.
-func (c *certificateSigningRequestsV1) Delete(name string, options *api.DeleteOptions) error {
-	return c.client.Delete().Namespace(c.ns).Resource("certificatesigningrequests").Name(name).Body(options).Do().Error()
-}
-
-// Create takes the representation of a certificateSigningRequest and creates it.  Returns the server's representation of the certificateSigningRequest, and an error, if it occurs.
-func (c *certificateSigningRequestsV1) Create(certificateSigningRequest *certificates.CertificateSigningRequest) (result *certificates.CertificateSigningRequest, err error) {
-	result = &certificates.CertificateSigningRequest{}
-	err = c.client.Post().Namespace(c.ns).Resource("certificatesigningrequests").Body(certificateSigningRequest).Do().Into(result)
-	return
-}
-
-// Update takes the representation of a certificateSigningRequest and updates it.  Returns the server's representation of the certificateSigningRequest, and an error, if it occurs.
-func (c *certificateSigningRequestsV1) Update(certificateSigningRequest *certificates.CertificateSigningRequest) (result *certificates.CertificateSigningRequest, err error) {
-	result = &certificates.CertificateSigningRequest{}
-	err = c.client.Put().Namespace(c.ns).Resource("certificatesigningrequests").Name(certificateSigningRequest.Name).Body(certificateSigningRequest).Do().Into(result)
-	return
-}
-
-// UpdateStatus takes the representation of a certificateSigningRequest and updates it.  Returns the server's representation of the certificateSigningRequest, and an error, if it occurs.
-func (c *certificateSigningRequestsV1) UpdateStatus(certificateSigningRequest *certificates.CertificateSigningRequest) (result *certificates.CertificateSigningRequest, err error) {
-	result = &certificates.CertificateSigningRequest{}
-	err = c.client.Put().Namespace(c.ns).Resource("certificatesigningrequests").Name(certificateSigningRequest.Name).SubResource("status").Body(certificateSigningRequest).Do().Into(result)
-	return
-}
-
-// Watch returns a watch.Interface that watches the requested certificateSigningRequests.
-func (c *certificateSigningRequestsV1) Watch(opts api.ListOptions) (watch.Interface, error) {
 	return c.client.Get().
 		Prefix("watch").
 		Namespace(c.ns).
