@@ -371,8 +371,8 @@ func (m *Master) InstallAPIs(c *Config) {
 		apiGroupsInfo = append(apiGroupsInfo, apiGroupInfo)
 
 		certificatesGVForDiscovery := unversioned.GroupVersionForDiscovery{
-			GroupVersion: extensionsGroupMeta.GroupVersion.String(),
-			Version:      extensionsGroupMeta.GroupVersion.Version,
+			GroupVersion: certificatesGroupMeta.GroupVersion.String(),
+			Version:      certificatesGroupMeta.GroupVersion.Version,
 		}
 		group := unversioned.APIGroup{
 			Name:             certificatesGroupMeta.GroupVersion.Group,

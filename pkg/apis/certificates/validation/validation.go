@@ -21,6 +21,7 @@ import (
 	"encoding/pem"
 	"errors"
 
+	apivalidation "k8s.io/kubernetes/pkg/api/validation"
 	"k8s.io/kubernetes/pkg/apis/certificates"
 	"k8s.io/kubernetes/pkg/util/validation/field"
 )
@@ -28,9 +29,9 @@ import (
 // validates the signature of a PEM-encoded PKCS#10 certificate signing
 // request. If this is invalid, we must not accept the CSR for further
 // processing.
-func validateSignature(csr *certificates.CertificateSigningRequest) error {
+func validateSignature(obj *certificates.CertificateSigningRequest) error {
 	// extract PEM from request object
-	pemCert := csr.Spec.CertificateRequest
+	pemCert := []byte(obj.Spec.CertificateRequest)
 
 	// decode PEM
 	block, _ := pem.Decode(pemCert)
@@ -57,7 +58,7 @@ func ValidateCertificateSigningRequest(csr *certificates.CertificateSigningReque
 	allErrs := apivalidation.ValidateObjectMeta(&csr.ObjectMeta, true, ValidateCertificateRequestName, field.NewPath("metadata"))
 	err := validateSignature(csr)
 	if err != nil {
-		allErrs := append(allErrs, field.Invalid(field.NewPath("request"), err, "request signature is invalid"))
+		allErrs = append(allErrs, field.Invalid(field.NewPath("request"), err, "request signature is invalid"))
 	}
 	return allErrs
 }

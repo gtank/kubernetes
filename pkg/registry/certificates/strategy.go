@@ -129,8 +129,8 @@ type csrStatusStrategy struct {
 var StatusStrategy = csrStatusStrategy{Strategy}
 
 func (csrStatusStrategy) PrepareForUpdate(obj, old runtime.Object) {
-	newCSR = obj.(*certificates.CertificateSigningRequest)
-	oldCSR = old.(*certificates.CertificateSigningRequest)
+	newCSR := obj.(*certificates.CertificateSigningRequest)
+	oldCSR := old.(*certificates.CertificateSigningRequest)
 
 	// Updating the Status should only update the Status.
 	newCSR.Spec = oldCSR.Spec
@@ -154,8 +154,8 @@ type csrApproveStrategy struct {
 var ApproveStrategy = csrApproveStrategy{Strategy}
 
 func (csrApproveStrategy) PrepareForUpdate(obj, old runtime.Object) {
-	newCSR = obj.(*certificates.CertificateSigningRequest)
-	oldCSR = old.(*certificates.CertificateSigningRequest)
+	newCSR := obj.(*certificates.CertificateSigningRequest)
+	oldCSR := old.(*certificates.CertificateSigningRequest)
 
 	// Updating the Approve should only update the Approve.
 	newCSR.Spec = oldCSR.Spec
