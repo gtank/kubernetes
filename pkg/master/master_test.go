@@ -42,6 +42,7 @@ import (
 	autoscalingapiv1 "k8s.io/kubernetes/pkg/apis/autoscaling/v1"
 	"k8s.io/kubernetes/pkg/apis/batch"
 	batchapiv1 "k8s.io/kubernetes/pkg/apis/batch/v1"
+	"k8s.io/kubernetes/pkg/apis/certificates"
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	extensionsapiv1beta1 "k8s.io/kubernetes/pkg/apis/extensions/v1beta1"
 	"k8s.io/kubernetes/pkg/genericapiserver"
@@ -79,12 +80,15 @@ func setUp(t *testing.T) (*Master, *etcdtesting.EtcdTestServer, Config, *assert.
 	storageDestinations.AddAPIGroup(
 		batch.GroupName, etcdstorage.NewEtcdStorage(server.Client, testapi.Batch.Codec(), etcdtest.PathPrefix(), false, etcdtest.DeserializationCacheSize))
 	storageDestinations.AddAPIGroup(
+		certificates.GroupName, etcdstorage.NewEtcdStorage(server.Client, testapi.Certificates.Codec(), etcdtest.PathPrefix(), false, etcdtest.DeserializationCacheSize))
+	storageDestinations.AddAPIGroup(
 		extensions.GroupName, etcdstorage.NewEtcdStorage(server.Client, testapi.Extensions.Codec(), etcdtest.PathPrefix(), false, etcdtest.DeserializationCacheSize))
 
 	config.StorageDestinations = storageDestinations
 	storageVersions[api.GroupName] = testapi.Default.GroupVersion().String()
 	storageVersions[autoscaling.GroupName] = testapi.Autoscaling.GroupVersion().String()
 	storageVersions[batch.GroupName] = testapi.Batch.GroupVersion().String()
+	storageVersions[certificates.GroupName] = testapi.Certificates.GroupVersion().String()
 	storageVersions[extensions.GroupName] = testapi.Extensions.GroupVersion().String()
 	config.StorageVersions = storageVersions
 	config.PublicAddress = net.ParseIP("192.168.10.4")
