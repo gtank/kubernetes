@@ -29,23 +29,26 @@ import (
 	"k8s.io/kubernetes/pkg/apimachinery/registered"
 	"k8s.io/kubernetes/pkg/apis/autoscaling"
 	"k8s.io/kubernetes/pkg/apis/batch"
+	"k8s.io/kubernetes/pkg/apis/certificates"
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	"k8s.io/kubernetes/pkg/runtime"
 
 	_ "k8s.io/kubernetes/pkg/api/install"
 	_ "k8s.io/kubernetes/pkg/apis/autoscaling/install"
 	_ "k8s.io/kubernetes/pkg/apis/batch/install"
+	_ "k8s.io/kubernetes/pkg/apis/certificates/install"
 	_ "k8s.io/kubernetes/pkg/apis/componentconfig/install"
 	_ "k8s.io/kubernetes/pkg/apis/extensions/install"
 	_ "k8s.io/kubernetes/pkg/apis/metrics/install"
 )
 
 var (
-	Groups      = make(map[string]TestGroup)
-	Default     TestGroup
-	Autoscaling TestGroup
-	Batch       TestGroup
-	Extensions  TestGroup
+	Groups       = make(map[string]TestGroup)
+	Default      TestGroup
+	Autoscaling  TestGroup
+	Batch        TestGroup
+	Certificates TestGroup
+	Extensions   TestGroup
 )
 
 type TestGroup struct {
@@ -122,10 +125,18 @@ func init() {
 			internalTypes:        api.Scheme.KnownTypes(extensions.SchemeGroupVersion),
 		}
 	}
+	if _, ok := Groups[certificates.GroupName]; !ok {
+		Groups[certificates.GroupName] = TestGroup{
+			externalGroupVersion: unversioned.GroupVersion{Group: certificates.GroupName, Version: registered.GroupOrDie(certificates.GroupName).GroupVersion.Version},
+			internalGroupVersion: certificates.SchemeGroupVersion,
+			internalTypes:        api.Scheme.KnownTypes(certificates.SchemeGroupVersion),
+		}
+	}
 
 	Default = Groups[api.GroupName]
 	Autoscaling = Groups[autoscaling.GroupName]
 	Batch = Groups[batch.GroupName]
+	Certificates = Groups[certificates.GroupName]
 	Extensions = Groups[extensions.GroupName]
 }
 
