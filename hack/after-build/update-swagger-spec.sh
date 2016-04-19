@@ -66,7 +66,11 @@ APISERVER_PID=$!
 kube::util::wait_for_url "http://127.0.0.1:${API_PORT}/healthz" "apiserver: "
 
 SWAGGER_API_PATH="http://127.0.0.1:${API_PORT}/swaggerapi/"
+<<<<<<< 04edfa864c2e807bc66b48bbcaef8441df67a3df
 DEFAULT_GROUP_VERSIONS="v1 autoscaling/v1 batch/v1 extensions/v1beta1 apps/v1alpha1"
+=======
+DEFAULT_GROUP_VERSIONS="v1 autoscaling/v1 batch/v1 certificates/v1beta1 extensions/v1beta1"
+>>>>>>> codegen: add certificates to update-swagger-spec.sh
 VERSIONS=${VERSIONS:-$DEFAULT_GROUP_VERSIONS}
 
 kube::log::status "Updating " ${SWAGGER_ROOT_DIR}
