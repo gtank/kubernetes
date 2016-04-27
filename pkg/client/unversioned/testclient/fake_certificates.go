@@ -90,8 +90,8 @@ func (c *FakeCertificateSigningRequest) UpdateStatus(csr *certificates.Certifica
 	return obj.(*certificates.CertificateSigningRequest), err
 }
 
-func (c *FakeCertificateSigningRequest) UpdateApprove(csr *certificates.CertificateSigningRequest) (*certificates.CertificateSigningRequest, error) {
-	obj, err := c.Fake.Invokes(NewUpdateSubresourceAction("certificatesigningrequests", "approve", c.Namespace, csr), csr)
+func (c *FakeCertificateSigningRequest) UpdateApproval(csr *certificates.CertificateSigningRequest) (*certificates.CertificateSigningRequest, error) {
+	obj, err := c.Fake.Invokes(NewUpdateSubresourceAction("certificatesigningrequests", "approval", c.Namespace, csr), csr)
 	if obj == nil {
 		return nil, err
 	}
