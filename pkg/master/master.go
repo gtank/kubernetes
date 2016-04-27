@@ -376,27 +376,19 @@ func (m *Master) InstallAPIs(c *Config) {
 	if c.APIResourceConfigSource.AnyResourcesForVersionEnabled(certificatesapiv1beta1.SchemeGroupVersion) {
 		certificateResources := m.getCertificateResources(c)
 		certificatesGroupMeta := registered.GroupOrDie(certificates.GroupName)
-		// Update the preferred version as per StorageVersions in the config.
-		storageVersion, found := c.StorageVersions[certificatesGroupMeta.GroupVersion.Group]
-		if !found {
-			glog.Fatalf("Couldn't find storage version of group %v", certificatesGroupMeta.GroupVersion.Group)
-		}
-		preferedGroupVersion, err := unversioned.ParseGroupVersion(storageVersion)
-		if err != nil {
-			glog.Fatalf("Error in parsing group version %s: %v", storageVersion, err)
-		}
-		certificatesGroupMeta.GroupVersion = preferedGroupVersion
+
+		// Hard code preferred group version to certificates/v1beta1
+		certificatesGroupMeta.GroupVersion = certificatesapiv1beta1.SchemeGroupVersion
 
 		apiGroupInfo := genericapiserver.APIGroupInfo{
 			GroupMeta: *certificatesGroupMeta,
 			VersionedResourcesStorageMap: map[string]map[string]rest.Storage{
 				"v1beta1": certificateResources,
 			},
-			OptionsExternalVersion:     &registered.GroupOrDie(api.GroupName).GroupVersion,
-			Scheme:                     api.Scheme,
-			ParameterCodec:             api.ParameterCodec,
-			NegotiatedSerializer:       api.Codecs,
-			NegotiatedStreamSerializer: api.StreamCodecs,
+			OptionsExternalVersion: &registered.GroupOrDie(api.GroupName).GroupVersion,
+			Scheme:                 api.Scheme,
+			ParameterCodec:         api.ParameterCodec,
+			NegotiatedSerializer:   api.Codecs,
 		}
 		apiGroupsInfo = append(apiGroupsInfo, apiGroupInfo)
 
@@ -865,11 +857,7 @@ func (m *Master) getAutoscalingResources(c *Config) map[string]rest.Storage {
 // getCertificateResources returns the resources for certificates API
 func (m *Master) getCertificateResources(c *Config) map[string]rest.Storage {
 	restOptions := func(resource string) generic.RESTOptions {
-		return generic.RESTOptions{
-			Storage:                 c.StorageDestinations.Get(certificates.GroupName, resource),
-			Decorator:               m.StorageDecorator(),
-			DeleteCollectionWorkers: m.deleteCollectionWorkers,
-		}
+		return m.GetRESTOptionsOrDie(c, api.Resource(resource))
 	}
 
 	// TODO update when we support more than one version of this group
@@ -886,25 +874,6 @@ func (m *Master) getCertificateResources(c *Config) map[string]rest.Storage {
 	}
 
 	return storage
-}
-
-// constructJobResources makes Job resources and adds them to the storage map.
-// They're installed in both batch and extensions. It's assumed that you've
-// already done the check that they should be on.
-func (m *Master) constructJobResources(c *Config, restStorage map[string]rest.Storage) {
-	// Note that job's storage settings are changed by changing the batch
-	// group. Clearly we want all jobs to be stored in the same place no
-	// matter where they're accessed from.
-	restOptions := func(resource string) generic.RESTOptions {
-		return generic.RESTOptions{
-			Storage:                 c.StorageDestinations.Search([]string{batch.GroupName, extensions.GroupName}, resource),
-			Decorator:               m.StorageDecorator(),
-			DeleteCollectionWorkers: m.deleteCollectionWorkers,
-		}
-	}
-	jobStorage, jobStatusStorage := jobetcd.NewREST(restOptions("jobs"))
-	restStorage["jobs"] = jobStorage
-	restStorage["jobs/status"] = jobStatusStorage
 }
 
 // getBatchResources returns the resources for batch api
