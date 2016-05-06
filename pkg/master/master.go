@@ -857,7 +857,7 @@ func (m *Master) getAutoscalingResources(c *Config) map[string]rest.Storage {
 // getCertificateResources returns the resources for certificates API
 func (m *Master) getCertificateResources(c *Config) map[string]rest.Storage {
 	restOptions := func(resource string) generic.RESTOptions {
-		return m.GetRESTOptionsOrDie(c, api.Resource(resource))
+		return m.GetRESTOptionsOrDie(c, certificates.Resource(resource))
 	}
 
 	// TODO update when we support more than one version of this group
