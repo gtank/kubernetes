@@ -75,8 +75,8 @@ type RequestConditionType string
 
 // These are the possible states for a certificate request.
 const (
-	Approved RequestConditionType = "Approved"
-	Denied   RequestConditionType = "Denied"
+	CertificateApproved RequestConditionType = "Approved"
+	CertificateDenied   RequestConditionType = "Denied"
 )
 
 type CertificateSigningRequestCondition struct {
