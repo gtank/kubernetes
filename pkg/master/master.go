@@ -377,7 +377,7 @@ func (m *Master) InstallAPIs(c *Config) {
 		certificateResources := m.getCertificateResources(c)
 		certificatesGroupMeta := registered.GroupOrDie(certificates.GroupName)
 
-		// Hard code preferred group version to certificates/v1beta1
+		// Hard code preferred group version to certificates/v1alpha1
 		certificatesGroupMeta.GroupVersion = certificatesapiv1alpha1.SchemeGroupVersion
 
 		apiGroupInfo := genericapiserver.APIGroupInfo{
