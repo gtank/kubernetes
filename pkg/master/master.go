@@ -39,7 +39,7 @@ import (
 	"k8s.io/kubernetes/pkg/apis/batch"
 	batchapiv1 "k8s.io/kubernetes/pkg/apis/batch/v1"
 	"k8s.io/kubernetes/pkg/apis/certificates"
-	certificatesapiv1beta1 "k8s.io/kubernetes/pkg/apis/certificates/v1beta1"
+	certificatesapiv1alpha1 "k8s.io/kubernetes/pkg/apis/certificates/v1alpha1"
 	"k8s.io/kubernetes/pkg/apis/extensions"
 	extensionsapiv1beta1 "k8s.io/kubernetes/pkg/apis/extensions/v1beta1"
 	"k8s.io/kubernetes/pkg/apiserver"
@@ -373,12 +373,12 @@ func (m *Master) InstallAPIs(c *Config) {
 	}
 
 	// Install certificates unless disabled.
-	if c.APIResourceConfigSource.AnyResourcesForVersionEnabled(certificatesapiv1beta1.SchemeGroupVersion) {
+	if c.APIResourceConfigSource.AnyResourcesForVersionEnabled(certificatesapiv1alpha1.SchemeGroupVersion) {
 		certificateResources := m.getCertificateResources(c)
 		certificatesGroupMeta := registered.GroupOrDie(certificates.GroupName)
 
 		// Hard code preferred group version to certificates/v1beta1
-		certificatesGroupMeta.GroupVersion = certificatesapiv1beta1.SchemeGroupVersion
+		certificatesGroupMeta.GroupVersion = certificatesapiv1alpha1.SchemeGroupVersion
 
 		apiGroupInfo := genericapiserver.APIGroupInfo{
 			GroupMeta: *certificatesGroupMeta,
@@ -861,7 +861,7 @@ func (m *Master) getCertificateResources(c *Config) map[string]rest.Storage {
 	}
 
 	// TODO update when we support more than one version of this group
-	version := certificatesapiv1beta1.SchemeGroupVersion
+	version := certificatesapiv1alpha1.SchemeGroupVersion
 
 	storage := map[string]rest.Storage{}
 
@@ -956,7 +956,7 @@ func (m *Master) IsTunnelSyncHealthy(req *http.Request) error {
 
 func DefaultAPIResourceConfigSource() *genericapiserver.ResourceConfig {
 	ret := genericapiserver.NewResourceConfig()
-	ret.EnableVersions(apiv1.SchemeGroupVersion, extensionsapiv1beta1.SchemeGroupVersion, batchapiv1.SchemeGroupVersion, autoscalingapiv1.SchemeGroupVersion, appsapi.SchemeGroupVersion, certificatesapiv1beta1.SchemeGroupVersion)
+	ret.EnableVersions(apiv1.SchemeGroupVersion, extensionsapiv1beta1.SchemeGroupVersion, batchapiv1.SchemeGroupVersion, autoscalingapiv1.SchemeGroupVersion, appsapi.SchemeGroupVersion, certificatesapiv1alpha1.SchemeGroupVersion)
 
 	// all extensions resources except these are disabled by default
 	ret.EnableResources(
