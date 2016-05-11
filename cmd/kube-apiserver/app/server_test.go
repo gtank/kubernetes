@@ -144,11 +144,11 @@ func TestParseRuntimeConfig(t *testing.T) {
 		{
 			// Disable certificates
 			runtimeConfig: map[string]string{
-				"certificates/v1beta1": "false",
+				"certificates/v1alpha1": "false",
 			},
 			expectedAPIConfig: func() *genericapiserver.ResourceConfig {
 				config := master.DefaultAPIResourceConfigSource()
-				config.DisableVersions(unversioned.GroupVersion{Group: "certificates", Version: "v1beta1"})
+				config.DisableVersions(unversioned.GroupVersion{Group: "certificates", Version: "v1alpha1"})
 				return config
 			},
 			err: false,
