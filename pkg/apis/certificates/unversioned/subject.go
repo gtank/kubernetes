@@ -18,28 +18,40 @@ package unversioned
 
 import (
 	"crypto/x509/pkix"
-	"encoding/json"
+
+	"github.com/golang/glog"
 )
 
 // Subject is a wrapper around pkix.Name which supports correct marshaling to
 // JSON. In particular, it marshals into strings, which can be used as map keys
 // in json.
 type Subject struct {
-	pkix.Name
+	Country, Organization, OrganizationalUnit []string
+	Locality, Province                        []string
+	StreetAddress, PostalCode                 []string
+	SerialNumber, CommonName                  string
+
+	Names      []string
+	ExtraNames []string
 }
 
-// UnmarshalJSON implements the json.Unmarshaller interface.
-func (s *Subject) UnmarshalJSON(b []byte) error {
-	var name pkix.Name
-	err := json.Unmarshal(b, &name)
-	if err != nil {
-		return err
+func NewInternalSubject(name pkix.Name) Subject {
+	subject := Subject{}
+	subject.Country = name.Country
+	subject.Organization = name.Organization
+	subject.OrganizationalUnit = name.OrganizationalUnit
+	subject.Locality = name.Locality
+	subject.Province = name.Province
+	subject.StreetAddress = name.StreetAddress
+	subject.PostalCode = name.PostalCode
+	subject.SerialNumber = name.SerialNumber
+	subject.CommonName = name.CommonName
+	for _, name := range name.Names {
+		glog.Infof("%v", name)
+		subject.Names = append(subject.Names, name.Value.(string))
 	}
-	s.Name = name
-	return nil
-}
-
-// MarshalJSON implements the json.Marshaler interface.
-func (s *Subject) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.Name)
+	for _, extraName := range name.ExtraNames {
+		subject.ExtraNames = append(subject.ExtraNames, extraName.Value.(string))
+	}
+	return subject
 }
