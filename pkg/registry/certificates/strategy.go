@@ -17,10 +17,16 @@ limitations under the License.
 package certificates
 
 import (
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
 	"fmt"
+
+	"github.com/golang/glog"
 
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/certificates"
+	internal "k8s.io/kubernetes/pkg/apis/certificates/unversioned"
 	"k8s.io/kubernetes/pkg/apis/certificates/validation"
 	"k8s.io/kubernetes/pkg/fields"
 	"k8s.io/kubernetes/pkg/labels"
@@ -49,45 +55,62 @@ func (csrStrategy) AllowCreateOnUpdate() bool {
 	return false
 }
 
-// PrepareForCreate clears fields that are not allowed to be set by end users on creation.
+// PrepareForCreate clears fields that are not allowed to be set by end users
+// on creation. Users cannot create any derived information, but we expect
+// information about the requesting user to be injected by the registry
+// interface. Clear everything else.
+// TODO: check these ordering assumptions. better way to inject user info?
 func (csrStrategy) PrepareForCreate(obj runtime.Object) {
 	csr := obj.(*certificates.CertificateSigningRequest)
-
-	// Users cannot create any derived information, but we expect
-	// information about the requesting user to be injected by the registry
-	// interface. Clear everything else.
-	// TODO: check these ordering assumptions. better way to inject this info?
-	oldStatus := csr.Status
-	csr.Status = certificates.CertificateSigningRequestStatus{}
-	csr.Status.Username = oldStatus.Username
-	csr.Status.UID = oldStatus.UID
-	csr.Status.Groups = oldStatus.Groups
+	csr.Spec.Fingerprint = ""
+	csr.Spec.Subject = internal.Subject{}
+	csr.Spec.Hostnames = []string{}
+	csr.Spec.IPAddresses = []string{}
 
 	// Be explicit that users cannot create pre-approved certificate requests.
+	csr.Status = certificates.CertificateSigningRequestStatus{}
 	csr.Status.Conditions = []certificates.CertificateSigningRequestCondition{}
 }
 
-// PrepareForUpdate clears fields that are not allowed to be set by end users on update.
+// PrepareForUpdate clears fields that are not allowed to be set by end users
+// on update. Certificate requests are immutable after creation except via subresources.
 func (csrStrategy) PrepareForUpdate(obj, old runtime.Object) {
 	newCSR := obj.(*certificates.CertificateSigningRequest)
 	oldCSR := old.(*certificates.CertificateSigningRequest)
 
-	// Certificate requests are immutable after creation.
 	newCSR.Spec = oldCSR.Spec
-
-	// The user cannot update these by updating the CSR. This includes
-	// approval condition.
 	newCSR.Status = oldCSR.Status
 }
 
-// Validate validates a new CSR.
+// Validate validates a new CSR. Validation must check for a correct signature.
 func (csrStrategy) Validate(ctx api.Context, obj runtime.Object) field.ErrorList {
 	csr := obj.(*certificates.CertificateSigningRequest)
 	return validation.ValidateCertificateSigningRequest(csr)
 }
 
-// Canonicalize normalizes the object after validation.
+// Canonicalize normalizes the object after validation (which includes a
+// signature check). This ordering makes it an ideal place to extract some
+// trusted CSR information.
 func (csrStrategy) Canonicalize(obj runtime.Object) {
+	csr := obj.(*certificates.CertificateSigningRequest)
+
+	// TODO: assuming this all works because validation just did it
+	pemBytes, _ := base64.StdEncoding.DecodeString(csr.Spec.Request)
+	block, _ := pem.Decode(pemBytes)
+	request, _ := x509.ParseCertificateRequest(block.Bytes)
+
+	// internal.Subject is just a marshalling wrapper around pkix.Name
+	csr.Spec.Subject = internal.Subject{request.Subject}
+	csr.Spec.Hostnames = request.DNSNames
+	for _, ip := range request.IPAddresses {
+		csr.Spec.IPAddresses = append(csr.Spec.IPAddresses, ip.String())
+	}
+	fingerprint, err := calculateFingerprint(request)
+	if err != nil {
+		glog.Errorf("failed to calculate fingerprint of CSR %s: %v", csr.Name, err)
+	} else {
+		csr.Spec.Fingerprint = fingerprint
+	}
 }
 
 // ValidateUpdate is the default update validation for an end user.
@@ -131,7 +154,9 @@ func (csrStatusStrategy) PrepareForUpdate(obj, old runtime.Object) {
 	newCSR := obj.(*certificates.CertificateSigningRequest)
 	oldCSR := old.(*certificates.CertificateSigningRequest)
 
-	// Updating the Status should only update the Status and not he approval subresource.
+	// Updating the Status should only update the Status and not the spec
+	// or approval conditions. The intent is to separate the concerns of
+	// approval and certificate issuance.
 	newCSR.Spec = oldCSR.Spec
 	newCSR.Status.Conditions = oldCSR.Status.Conditions
 }
@@ -142,7 +167,6 @@ func (csrStatusStrategy) ValidateUpdate(ctx api.Context, obj, old runtime.Object
 
 // Canonicalize normalizes the object after validation.
 func (csrStatusStrategy) Canonicalize(obj runtime.Object) {
-	// TODO: derive information in Status here?
 }
 
 // Storage strategy for the Approval subresource
@@ -156,11 +180,10 @@ func (csrApprovalStrategy) PrepareForUpdate(obj, old runtime.Object) {
 	newCSR := obj.(*certificates.CertificateSigningRequest)
 	oldCSR := old.(*certificates.CertificateSigningRequest)
 
-	// Updating the Approval should only update the conditions.
+	// Updating the approval should only update the conditions.
 	newCSR.Spec = oldCSR.Spec
-	newConditions := newCSR.Status.Conditions
 	newCSR.Status = oldCSR.Status
-	newCSR.Status.Conditions = newConditions
+	newCSR.Status.Conditions = newCSR.Status.Conditions
 }
 
 func (csrApprovalStrategy) ValidateUpdate(ctx api.Context, obj, old runtime.Object) field.ErrorList {

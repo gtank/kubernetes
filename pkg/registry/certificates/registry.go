@@ -56,10 +56,9 @@ func (s *storage) ListCSRs(ctx api.Context, options *api.ListOptions) (*certific
 func (s *storage) CreateCSR(ctx api.Context, csr *certificates.CertificateSigningRequest) error {
 	// Inject user.Info from request context if available.
 	if user, ok := api.UserFrom(ctx); ok {
-		csr.Status = certificates.CertificateSigningRequestStatus{}
-		csr.Status.Username = user.GetName()
-		csr.Status.UID = user.GetUID()
-		csr.Status.Groups = user.GetGroups()
+		csr.Spec.Username = user.GetName()
+		csr.Spec.UID = user.GetUID()
+		csr.Spec.Groups = user.GetGroups()
 	}
 	_, err := s.Create(ctx, csr)
 	return err
