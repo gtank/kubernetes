@@ -14,5 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// +genconversion=true
-package v1beta1
+package v1alpha1
+
+import "k8s.io/kubernetes/pkg/runtime"
+
+func addConversionFuncs(scheme *runtime.Scheme) {
+	// Add non-generated conversion functions here. Currently there are none.
+}

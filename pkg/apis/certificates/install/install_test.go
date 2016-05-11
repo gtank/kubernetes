@@ -24,7 +24,7 @@ import (
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/apimachinery/registered"
 	"k8s.io/kubernetes/pkg/apis/certificates"
-	"k8s.io/kubernetes/pkg/apis/certificates/v1beta1"
+	"k8s.io/kubernetes/pkg/apis/certificates/v1alpha1"
 	"k8s.io/kubernetes/pkg/runtime"
 )
 
@@ -77,7 +77,7 @@ func TestInterfacesFor(t *testing.T) {
 }
 
 func TestRESTMapper(t *testing.T) {
-	gv := v1beta1.SchemeGroupVersion
+	gv := v1alpha1.SchemeGroupVersion
 	csrGVK := gv.WithKind("CertificateSigningRequest")
 
 	if gvk, err := registered.GroupOrDie(certificates.GroupName).RESTMapper.KindFor(gv.WithResource("certificatesigningrequests")); err != nil || gvk != csrGVK {
