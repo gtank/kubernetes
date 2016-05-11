@@ -100,7 +100,7 @@ func (csrStrategy) Canonicalize(obj runtime.Object) {
 	request, _ := x509.ParseCertificateRequest(block.Bytes)
 
 	// internal.Subject is just a marshalling wrapper around pkix.Name
-	csr.Spec.Subject = internal.Subject{request.Subject}
+	csr.Spec.Subject = internal.NewInternalSubject(request.Subject)
 	csr.Spec.Hostnames = request.DNSNames
 	for _, ip := range request.IPAddresses {
 		csr.Spec.IPAddresses = append(csr.Spec.IPAddresses, ip.String())
