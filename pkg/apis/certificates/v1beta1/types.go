@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1beta1
+package certificates
 
 import (
 	"k8s.io/kubernetes/pkg/api"
@@ -36,25 +36,15 @@ type CertificateSigningRequest struct {
 	Status CertificateSigningRequestStatus `json:"status,omitempty"`
 }
 
-// This information is immutable after the request is created.
+// This information is immutable after the request is created. Only the Request
+// and ExtraInfo fields can be set on creation, other fields are derived by
+// Kubernetes and cannot be modified by users.
 type CertificateSigningRequestSpec struct {
 	// Base64-encoded PKCS#10 CSR data
 	Request string `json:"request"`
 
 	// Any extra information the node wishes to send with the request.
 	ExtraInfo []string `json:"extrainfo,omitempty"`
-}
-
-// This information is derived from the request by Kubernetes and cannot be
-// modified by users. All information is optional since it might not be
-// available in the underlying request. This is intented to aid approval
-// decisions.
-type CertificateSigningRequestStatus struct {
-	// Information about the requesting user (if relevant)
-	// See user.Info interface for details
-	Username string   `json:"username,omitempty"`
-	UID      string   `json:"uid,omitempty"`
-	Groups   []string `json:"groups,omitempty"`
 
 	// Fingerprint of the public key in request
 	Fingerprint string `json:"fingerprint,omitempty"`
@@ -68,7 +58,19 @@ type CertificateSigningRequestStatus struct {
 	// IP SANs from the request
 	IPAddresses []string `json:"ipaddresses,omitempty"`
 
+	// Information about the requesting user (if relevant)
+	// See user.Info interface for details
+	Username string   `json:"username,omitempty"`
+	UID      string   `json:"uid,omitempty"`
+	Groups   []string `json:"groups,omitempty"`
+}
+
+type CertificateSigningRequestStatus struct {
+	// Conditions applied to the request, such as approval or denial.
 	Conditions []CertificateSigningRequestCondition `json:"conditions,omitempty"`
+
+	// If request was approved, the controller will place the issued certificate here.
+	Certificate []byte `json:"certificate,omitempty"`
 }
 
 type RequestConditionType string
@@ -86,8 +88,8 @@ type CertificateSigningRequestCondition struct {
 	Reason string `json:"reason,omitempty"`
 	// human readable message with details about the request state
 	Message string `json:"message,omitempty"`
-	// If request was approved, the controller will place the issued certificate here.
-	Certificate []byte `json:"certificate,omitempty"`
+	// timestamp for the last update to this condition
+	LastUpdateTime unversioned.Time `json:"lastupdatetime,omitempty"`
 }
 
 type CertificateSigningRequestList struct {
