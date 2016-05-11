@@ -16,11 +16,7 @@ limitations under the License.
 
 package unversioned
 
-import (
-	"crypto/x509/pkix"
-
-	"github.com/golang/glog"
-)
+import "crypto/x509/pkix"
 
 // Subject is a wrapper around pkix.Name which supports correct marshaling to
 // JSON. In particular, it marshals into strings, which can be used as map keys
@@ -47,7 +43,6 @@ func NewInternalSubject(name pkix.Name) Subject {
 	subject.SerialNumber = name.SerialNumber
 	subject.CommonName = name.CommonName
 	for _, name := range name.Names {
-		glog.Infof("%v", name)
 		subject.Names = append(subject.Names, name.Value.(string))
 	}
 	for _, extraName := range name.ExtraNames {
