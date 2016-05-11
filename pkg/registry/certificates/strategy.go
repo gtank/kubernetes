@@ -100,7 +100,7 @@ func (csrStrategy) Canonicalize(obj runtime.Object) {
 	request, _ := x509.ParseCertificateRequest(block.Bytes)
 
 	// internal.Subject is just a marshalling wrapper around pkix.Name
-	csr.Spec.Subject = internal.Subject{request.Subject}
+	csr.Spec.Subject = internal.Subject{*request.Subject}
 	csr.Spec.Hostnames = request.DNSNames
 	for _, ip := range request.IPAddresses {
 		csr.Spec.IPAddresses = append(csr.Spec.IPAddresses, ip.String())
@@ -182,8 +182,8 @@ func (csrApprovalStrategy) PrepareForUpdate(obj, old runtime.Object) {
 
 	// Updating the approval should only update the conditions.
 	newCSR.Spec = oldCSR.Spec
+	oldCSR.Status.Conditions = newCSR.Status.Conditions
 	newCSR.Status = oldCSR.Status
-	newCSR.Status.Conditions = newCSR.Status.Conditions
 }
 
 func (csrApprovalStrategy) ValidateUpdate(ctx api.Context, obj, old runtime.Object) field.ErrorList {
