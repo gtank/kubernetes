@@ -383,7 +383,7 @@ func (m *Master) InstallAPIs(c *Config) {
 		apiGroupInfo := genericapiserver.APIGroupInfo{
 			GroupMeta: *certificatesGroupMeta,
 			VersionedResourcesStorageMap: map[string]map[string]rest.Storage{
-				"v1beta1": certificateResources,
+				"v1alpha1": certificateResources,
 			},
 			OptionsExternalVersion: &registered.GroupOrDie(api.GroupName).GroupVersion,
 			Scheme:                 api.Scheme,
