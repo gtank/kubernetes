@@ -22,8 +22,6 @@ limitations under the License.
 package certificates
 
 import (
-	pkg5_pkix "crypto/x509/pkix"
-	pkg6_asn1 "encoding/asn1"
 	"errors"
 	"fmt"
 	codec1978 "github.com/ugorji/go/codec"
@@ -66,14 +64,12 @@ func init() {
 		panic(err)
 	}
 	if false { // reference the types, but skip this branch at build/run time
-		var v0 pkg5_pkix.Name
-		var v1 pkg6_asn1.ObjectIdentifier
-		var v2 pkg2_api.ObjectMeta
-		var v3 pkg1_unversioned.TypeMeta
-		var v4 pkg4_unversioned.Subject
-		var v5 pkg3_types.UID
-		var v6 time.Time
-		_, _, _, _, _, _, _ = v0, v1, v2, v3, v4, v5, v6
+		var v0 pkg2_api.ObjectMeta
+		var v1 pkg1_unversioned.TypeMeta
+		var v2 pkg4_unversioned.Subject
+		var v3 pkg3_types.UID
+		var v4 time.Time
+		_, _, _, _, _ = v0, v1, v2, v3, v4
 	}
 }
 
@@ -543,8 +539,6 @@ func (x *CertificateSigningRequestSpec) CodecEncodeSelf(e *codec1978.Encoder) {
 					_ = yym14
 					if false {
 					} else if z.HasExtensions() && z.EncExt(yy13) {
-					} else if !yym14 && z.IsJSONHandle() {
-						z.EncJSONMarshal(yy13)
 					} else {
 						z.EncFallback(yy13)
 					}
@@ -561,8 +555,6 @@ func (x *CertificateSigningRequestSpec) CodecEncodeSelf(e *codec1978.Encoder) {
 					_ = yym16
 					if false {
 					} else if z.HasExtensions() && z.EncExt(yy15) {
-					} else if !yym16 && z.IsJSONHandle() {
-						z.EncJSONMarshal(yy15)
 					} else {
 						z.EncFallback(yy15)
 					}
@@ -811,8 +803,6 @@ func (x *CertificateSigningRequestSpec) codecDecodeSelfFromMap(l int, d *codec19
 				_ = yym9
 				if false {
 				} else if z.HasExtensions() && z.DecExt(yyv8) {
-				} else if !yym9 && z.IsJSONHandle() {
-					z.DecJSONUnmarshal(yyv8)
 				} else {
 					z.DecFallback(yyv8, false)
 				}
@@ -952,8 +942,6 @@ func (x *CertificateSigningRequestSpec) codecDecodeSelfFromArray(l int, d *codec
 		_ = yym24
 		if false {
 		} else if z.HasExtensions() && z.DecExt(yyv23) {
-		} else if !yym24 && z.IsJSONHandle() {
-			z.DecJSONUnmarshal(yyv23)
 		} else {
 			z.DecFallback(yyv23, false)
 		}
