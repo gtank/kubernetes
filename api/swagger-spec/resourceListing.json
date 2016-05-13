@@ -52,6 +52,14 @@
    {
     "path": "/apis/apps",
     "description": "get information of a group"
+   },
+   {
+    "path": "/apis/certificates/v1alpha1",
+    "description": "API at /apis/certificates/v1alpha1"
+   },
+   {
+    "path": "/apis/certificates",
+    "description": "get information of a group"
    }
   ],
   "apiVersion": "",
