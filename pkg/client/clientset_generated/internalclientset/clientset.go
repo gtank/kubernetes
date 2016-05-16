@@ -20,6 +20,7 @@ import (
 	"github.com/golang/glog"
 	unversionedautoscaling "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset/typed/autoscaling/unversioned"
 	unversionedbatch "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset/typed/batch/unversioned"
+	unversionedcertificates "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset/typed/certificates/unversioned"
 	unversionedcore "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset/typed/core/unversioned"
 	unversionedextensions "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset/typed/extensions/unversioned"
 	restclient "k8s.io/kubernetes/pkg/client/restclient"
@@ -33,6 +34,7 @@ type Interface interface {
 	Extensions() unversionedextensions.ExtensionsInterface
 	Autoscaling() unversionedautoscaling.AutoscalingInterface
 	Batch() unversionedbatch.BatchInterface
+	Certificates() unversionedcertificates.CertificatesInterface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
@@ -43,6 +45,7 @@ type Clientset struct {
 	*unversionedextensions.ExtensionsClient
 	*unversionedautoscaling.AutoscalingClient
 	*unversionedbatch.BatchClient
+	*unversionedcertificates.CertificatesClient
 }
 
 // Core retrieves the CoreClient
@@ -77,6 +80,14 @@ func (c *Clientset) Batch() unversionedbatch.BatchInterface {
 	return c.BatchClient
 }
 
+// Certificates retrieves the CertificatesClient
+func (c *Clientset) Certificates() unversionedcertificates.CertificatesInterface {
+	if c == nil {
+		return nil
+	}
+	return c.CertificatesClient
+}
+
 // Discovery retrieves the DiscoveryClient
 func (c *Clientset) Discovery() discovery.DiscoveryInterface {
 	return c.DiscoveryClient
@@ -106,6 +117,10 @@ func NewForConfig(c *restclient.Config) (*Clientset, error) {
 	if err != nil {
 		return &clientset, err
 	}
+	clientset.CertificatesClient, err = unversionedcertificates.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return &clientset, err
+	}
 
 	clientset.DiscoveryClient, err = discovery.NewDiscoveryClientForConfig(&configShallowCopy)
 	if err != nil {
@@ -122,6 +137,7 @@ func NewForConfigOrDie(c *restclient.Config) *Clientset {
 	clientset.ExtensionsClient = unversionedextensions.NewForConfigOrDie(c)
 	clientset.AutoscalingClient = unversionedautoscaling.NewForConfigOrDie(c)
 	clientset.BatchClient = unversionedbatch.NewForConfigOrDie(c)
+	clientset.CertificatesClient = unversionedcertificates.NewForConfigOrDie(c)
 
 	clientset.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &clientset
@@ -134,6 +150,7 @@ func New(c *restclient.RESTClient) *Clientset {
 	clientset.ExtensionsClient = unversionedextensions.New(c)
 	clientset.AutoscalingClient = unversionedautoscaling.New(c)
 	clientset.BatchClient = unversionedbatch.New(c)
+	clientset.CertificatesClient = unversionedcertificates.New(c)
 
 	clientset.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &clientset
