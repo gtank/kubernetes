@@ -17,9 +17,6 @@ limitations under the License.
 package certificates
 
 import (
-	"crypto/x509"
-	"encoding/base64"
-	"encoding/pem"
 	"fmt"
 
 	"github.com/golang/glog"
@@ -31,6 +28,7 @@ import (
 	"k8s.io/kubernetes/pkg/labels"
 	"k8s.io/kubernetes/pkg/registry/generic"
 	"k8s.io/kubernetes/pkg/runtime"
+	certutil "k8s.io/kubernetes/pkg/util/certificates"
 	"k8s.io/kubernetes/pkg/util/validation/field"
 )
 
@@ -92,13 +90,12 @@ func (csrStrategy) Validate(ctx api.Context, obj runtime.Object) field.ErrorList
 // trusted CSR information.
 func (csrStrategy) Canonicalize(obj runtime.Object) {
 	csr := obj.(*certificates.CertificateSigningRequest)
+	request, err := certutil.ParseCertificateRequestObject(csr)
+	if err != nil {
+		return
+	}
 
-	// TODO: assuming this all works because validation just did it
-	pemBytes, _ := base64.StdEncoding.DecodeString(csr.Spec.Request)
-	block, _ := pem.Decode(pemBytes)
-	request, _ := x509.ParseCertificateRequest(block.Bytes)
-
-	// internal.Subject is just a marshalling wrapper around pkix.Name
+	// internal Subject is just a marshalling wrapper around pkix.Name
 	csr.Spec.Subject = certificates.NewInternalSubject(request.Subject)
 	csr.Spec.Hostnames = request.DNSNames
 	for _, ip := range request.IPAddresses {
