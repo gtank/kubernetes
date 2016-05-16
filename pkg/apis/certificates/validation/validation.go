@@ -17,14 +17,11 @@ limitations under the License.
 package validation
 
 import (
-	"crypto/x509"
-	"encoding/base64"
-	"encoding/pem"
-	"errors"
 	"fmt"
 
 	apivalidation "k8s.io/kubernetes/pkg/api/validation"
 	"k8s.io/kubernetes/pkg/apis/certificates"
+	certutil "k8s.io/kubernetes/pkg/util/certificates"
 	"k8s.io/kubernetes/pkg/util/validation/field"
 )
 
@@ -32,22 +29,10 @@ import (
 // signing request. If this is invalid, we must not accept the CSR for further
 // processing.
 func validateSignature(obj *certificates.CertificateSigningRequest) error {
-	// extract PEM from request object
-	pemBytes, err := base64.StdEncoding.DecodeString(obj.Spec.Request)
+	csr, err := certutil.ParseCertificateRequestObject(obj)
 	if err != nil {
 		return err
 	}
-	block, _ := pem.Decode(pemBytes)
-	if block == nil || block.Type != "CERTIFICATE REQUEST" {
-		return errors.New("PEM block type must be CERTIFICATE REQUEST")
-	}
-
-	// parse request
-	csr, err := x509.ParseCertificateRequest(block.Bytes)
-	if err != nil {
-		return err
-	}
-
 	// check that the signature is valid
 	return csr.CheckSignature()
 }
