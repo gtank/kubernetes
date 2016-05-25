@@ -17,9 +17,6 @@ limitations under the License.
 package validation
 
 import (
-	"crypto/sha256"
-	"crypto/x509"
-	"encoding/hex"
 	"fmt"
 
 	apivalidation "k8s.io/kubernetes/pkg/api/validation"
@@ -41,24 +38,7 @@ func validateCSR(obj *certificates.CertificateSigningRequest) error {
 	if err != nil {
 		return err
 	}
-	// make sure we can calculate a fingerprint
-	_, err = calculateFingerprint(csr)
-	if err != nil {
-		return err
-	}
 	return nil
-}
-
-// calculateFingerprint returns the SHA256 hash of the PKIX encoded public key
-// from a certificate request. This instance assumes that the request's
-// signature has already been checked and should not be used in other contexts.
-func calculateFingerprint(req *x509.CertificateRequest) (string, error) {
-	derBytes, err := x509.MarshalPKIXPublicKey(req.PublicKey)
-	if err != nil {
-		return "", err
-	}
-	digest := sha256.Sum256(derBytes)
-	return hex.EncodeToString(digest[:]), nil
 }
 
 // We don't care what you call your certificate requests.

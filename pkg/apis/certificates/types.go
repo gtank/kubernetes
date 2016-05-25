@@ -17,8 +17,6 @@ limitations under the License.
 package certificates
 
 import (
-	"crypto/x509/pkix"
-
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 )
@@ -43,21 +41,6 @@ type CertificateSigningRequest struct {
 type CertificateSigningRequestSpec struct {
 	// Base64-encoded PKCS#10 CSR data
 	Request []byte `json:"request"`
-
-	// Any extra information the node wishes to send with the request.
-	ExtraInfo []string `json:"extraInfo,omitempty"`
-
-	// Fingerprint of the public key in request
-	Fingerprint string `json:"fingerprint,omitempty"`
-
-	// Subject fields from the request
-	Subject Subject `json:"subject,omitempty"`
-
-	// DNS SANs from the request
-	Hostnames []string `json:"hostnames,omitempty"`
-
-	// IP SANs from the request
-	IPAddresses []string `json:"ipAddresses,omitempty"`
 
 	// Information about the requesting user (if relevant)
 	// See user.Info interface for details
@@ -98,42 +81,4 @@ type CertificateSigningRequestList struct {
 	unversioned.ListMeta `json:"metadata,omitempty"`
 
 	Items []CertificateSigningRequest `json:"items,omitempty"`
-}
-
-// Subject is a wrapper around pkix.Name which supports correct marshaling to
-// JSON. In particular, it marshals into strings, which can be used as map keys
-// in json.
-type Subject struct {
-	Country            []string
-	Organization       []string
-	OrganizationalUnit []string
-	Locality           []string
-	Province           []string
-	StreetAddress      []string
-	PostalCode         []string
-	SerialNumber       string
-	CommonName         string
-
-	Names      []string
-	ExtraNames []string
-}
-
-func NewInternalSubject(name pkix.Name) Subject {
-	subject := Subject{}
-	subject.Country = name.Country
-	subject.Organization = name.Organization
-	subject.OrganizationalUnit = name.OrganizationalUnit
-	subject.Locality = name.Locality
-	subject.Province = name.Province
-	subject.StreetAddress = name.StreetAddress
-	subject.PostalCode = name.PostalCode
-	subject.SerialNumber = name.SerialNumber
-	subject.CommonName = name.CommonName
-	for _, name := range name.Names {
-		subject.Names = append(subject.Names, name.Value.(string))
-	}
-	for _, extraName := range name.ExtraNames {
-		subject.ExtraNames = append(subject.ExtraNames, extraName.Value.(string))
-	}
-	return subject
 }
