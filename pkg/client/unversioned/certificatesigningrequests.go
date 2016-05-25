@@ -97,6 +97,7 @@ func (c *certificateSigningRequests) UpdateApproval(certificateSigningRequest *c
 func (c *certificateSigningRequests) Watch(opts api.ListOptions) (watch.Interface, error) {
 	return c.client.Get().
 		Prefix("watch").
+		Namespace(api.NamespaceAll).
 		Resource("certificatesigningrequests").
 		VersionedParams(&opts, api.ParameterCodec).
 		Watch()
