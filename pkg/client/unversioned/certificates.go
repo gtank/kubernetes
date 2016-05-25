@@ -25,15 +25,15 @@ import (
 
 // Interface holds the methods for clients of Kubernetes to allow mock testing.
 type CertificatesInterface interface {
-	CertificateSigningRequestsNamespacer
+	CertificateSigningRequests() CertificateSigningRequestInterface
 }
 
 type CertificatesClient struct {
 	*restclient.RESTClient
 }
 
-func (c *CertificatesClient) CertificateSigningRequests(namespace string) CertificateSigningRequestInterface {
-	return newCertificateSigningRequests(c, namespace)
+func (c *CertificatesClient) CertificateSigningRequests() CertificateSigningRequestInterface {
+	return newCertificateSigningRequests(c)
 }
 
 // NewCertificates creates a new CertificatesClient for the given config.
