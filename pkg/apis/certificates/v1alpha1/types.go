@@ -26,13 +26,13 @@ import (
 // Describes a certificate signing request
 type CertificateSigningRequest struct {
 	unversioned.TypeMeta `json:",inline"`
-	v1.ObjectMeta        `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	v1.ObjectMeta        `json:"metadata,omitempty"`
 
 	// The certificate request itself and any additonal information.
-	Spec CertificateSigningRequestSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+	Spec CertificateSigningRequestSpec `json:"spec,omitempty"`
 
 	// Derived information about the request.
-	Status CertificateSigningRequestStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
+	Status CertificateSigningRequestStatus `json:"status,omitempty"`
 }
 
 // This information is immutable after the request is created. Only the Request
@@ -40,36 +40,21 @@ type CertificateSigningRequest struct {
 // Kubernetes and cannot be modified by users.
 type CertificateSigningRequestSpec struct {
 	// Base64-encoded PKCS#10 CSR data
-	Request []byte `json:"request" protobuf:"bytes,1,opt,name=request"`
-
-	// Any extra information the node wishes to send with the request.
-	ExtraInfo []string `json:"extraInfo,omitempty" protobuf:"bytes,2,rep,name=extraInfo"`
-
-	// Fingerprint of the public key in request
-	Fingerprint string `json:"fingerprint,omitempty" protobuf:"bytes,3,opt,name=fingerprint"`
-
-	// Subject fields from the request
-	Subject Subject `json:"subject,omitempty" protobuf:"bytes,4,opt,name=subject"`
-
-	// DNS SANs from the request
-	Hostnames []string `json:"hostnames,omitempty" protobuf:"bytes,5,rep,name=hostnames"`
-
-	// IP SANs from the request
-	IPAddresses []string `json:"ipAddresses,omitempty" protobuf:"bytes,6,rep,name=ipAddresses"`
+	Request []byte `json:"request"`
 
 	// Information about the requesting user (if relevant)
 	// See user.Info interface for details
-	Username string   `json:"username,omitempty" protobuf:"bytes,7,opt,name=username"`
-	UID      string   `json:"uid,omitempty" protobuf:"bytes,8,opt,name=uid"`
-	Groups   []string `json:"groups,omitempty" protobuf:"bytes,9,rep,name=groups"`
+	Username string   `json:"username,omitempty"`
+	UID      string   `json:"uid,omitempty"`
+	Groups   []string `json:"groups,omitempty"`
 }
 
 type CertificateSigningRequestStatus struct {
 	// Conditions applied to the request, such as approval or denial.
-	Conditions []CertificateSigningRequestCondition `json:"conditions,omitempty" protobuf:"bytes,1,rep,name=conditions"`
+	Conditions []CertificateSigningRequestCondition `json:"conditions,omitempty"`
 
 	// If request was approved, the controller will place the issued certificate here.
-	Certificate []byte `json:"certificate,omitempty" protobuf:"bytes,2,opt,name=certificate"`
+	Certificate []byte `json:"certificate,omitempty"`
 }
 
 type RequestConditionType string
@@ -82,36 +67,18 @@ const (
 
 type CertificateSigningRequestCondition struct {
 	// request approval state, currently Approved or Denied.
-	Type RequestConditionType `json:"type" protobuf:"bytes,1,opt,name=type,casttype=RequestConditionType"`
+	Type RequestConditionType `json:"type"`
 	// brief reason for the request state
-	Reason string `json:"reason,omitempty" protobuf:"bytes,2,opt,name=reason"`
+	Reason string `json:"reason,omitempty"`
 	// human readable message with details about the request state
-	Message string `json:"message,omitempty" protobuf:"bytes,3,opt,name=message"`
+	Message string `json:"message,omitempty"`
 	// timestamp for the last update to this condition
-	LastUpdateTime unversioned.Time `json:"lastUpdateTime,omitempty" protobuf:"bytes,4,opt,name=lastUpdateTime"`
+	LastUpdateTime unversioned.Time `json:"lastUpdateTime,omitempty"`
 }
 
 type CertificateSigningRequestList struct {
 	unversioned.TypeMeta `json:",inline"`
-	unversioned.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	unversioned.ListMeta `json:"metadata,omitempty"`
 
-	Items []CertificateSigningRequest `json:"items,omitempty" protobuf:"bytes,2,rep,name=items"`
-}
-
-// Subject is a wrapper around pkix.Name which supports correct marshaling to
-// JSON. In particular, it marshals into strings, which can be used as map keys
-// in json.
-type Subject struct {
-	Country            []string `protobuf:"bytes,1,rep,name=country"`
-	Organization       []string `protobuf:"bytes,2,rep,name=organization"`
-	OrganizationalUnit []string `protobuf:"bytes,3,rep,name=organizationalUnit"`
-	Locality           []string `protobuf:"bytes,4,rep,name=locality"`
-	Province           []string `protobuf:"bytes,5,rep,name=province"`
-	StreetAddress      []string `protobuf:"bytes,6,rep,name=streetAddress"`
-	PostalCode         []string `protobuf:"bytes,7,rep,name=postalCode"`
-	SerialNumber       string   `protobuf:"bytes,8,rep,name=serialNumber"`
-	CommonName         string   `protobuf:"bytes,9,opt,name=commonName"`
-
-	Names      []string `protobuf:"bytes,10,rep,name=names"`
-	ExtraNames []string `protobuf:"bytes,11,rep,name=extraNames"`
+	Items []CertificateSigningRequest `json:"items,omitempty"`
 }

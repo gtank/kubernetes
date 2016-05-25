@@ -19,8 +19,6 @@ package certificates
 import (
 	"fmt"
 
-	"github.com/golang/glog"
-
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/certificates"
 	"k8s.io/kubernetes/pkg/apis/certificates/validation"
@@ -28,7 +26,6 @@ import (
 	"k8s.io/kubernetes/pkg/labels"
 	"k8s.io/kubernetes/pkg/registry/generic"
 	"k8s.io/kubernetes/pkg/runtime"
-	certutil "k8s.io/kubernetes/pkg/util/certificates"
 	"k8s.io/kubernetes/pkg/util/validation/field"
 )
 
@@ -59,10 +56,6 @@ func (csrStrategy) AllowCreateOnUpdate() bool {
 // TODO: check these ordering assumptions. better way to inject user info?
 func (csrStrategy) PrepareForCreate(obj runtime.Object) {
 	csr := obj.(*certificates.CertificateSigningRequest)
-	csr.Spec.Fingerprint = ""
-	csr.Spec.Subject = certificates.Subject{}
-	csr.Spec.Hostnames = []string{}
-	csr.Spec.IPAddresses = []string{}
 
 	// Be explicit that users cannot create pre-approved certificate requests.
 	csr.Status = certificates.CertificateSigningRequestStatus{}
@@ -85,30 +78,8 @@ func (csrStrategy) Validate(ctx api.Context, obj runtime.Object) field.ErrorList
 	return validation.ValidateCertificateSigningRequest(csr)
 }
 
-// Canonicalize normalizes the object after validation (which includes a
-// signature check). This ordering makes it an ideal place to extract some
-// trusted CSR information.
-func (csrStrategy) Canonicalize(obj runtime.Object) {
-	csr := obj.(*certificates.CertificateSigningRequest)
-	request, err := certutil.ParseCertificateRequestObject(csr)
-	if err != nil {
-		glog.Errorf("unable to canonicalize csr %s: %v", csr.Name, err)
-		return
-	}
-
-	// internal Subject is just a marshalling wrapper around pkix.Name
-	csr.Spec.Subject = certificates.NewInternalSubject(request.Subject)
-	csr.Spec.Hostnames = request.DNSNames
-	for _, ip := range request.IPAddresses {
-		csr.Spec.IPAddresses = append(csr.Spec.IPAddresses, ip.String())
-	}
-	fingerprint, err := calculateFingerprint(request)
-	if err != nil {
-		glog.Errorf("failed to calculate fingerprint of CSR %s: %v", csr.Name, err)
-	} else {
-		csr.Spec.Fingerprint = fingerprint
-	}
-}
+// Canonicalize normalizes the object after validation (which includes a signature check).
+func (csrStrategy) Canonicalize(obj runtime.Object) {}
 
 // ValidateUpdate is the default update validation for an end user.
 func (csrStrategy) ValidateUpdate(ctx api.Context, obj, old runtime.Object) field.ErrorList {
