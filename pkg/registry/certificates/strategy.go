@@ -44,7 +44,7 @@ var Strategy = csrStrategy{api.Scheme, api.SimpleNameGenerator}
 
 // NamespaceScoped is true for CSRs.
 func (csrStrategy) NamespaceScoped() bool {
-	return true
+	return false
 }
 
 // AllowCreateOnUpdate is false for CSRs.
