@@ -1036,7 +1036,7 @@ func (c *clientSwaggerSchema) ValidateBytes(data []byte) error {
 		}
 		return getSchemaAndValidate(c.fedc, data, "apis/", gvk.GroupVersion().String(), c.cacheDir, c)
 	}
-	if gvk.Group == extensions.GroupName {
+	if gvk.Group == certificates.GroupName {
 		if c.c.CertificatesClient == nil {
 			return errors.New("unable to validate: no certificates client")
 		}
