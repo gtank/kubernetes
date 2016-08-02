@@ -76,6 +76,11 @@ func (s *KubeletServer) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&s.TLSPrivateKeyFile, "tls-private-key-file", s.TLSPrivateKeyFile, "File containing x509 private key matching --tls-cert-file.")
 	fs.StringVar(&s.CertDirectory, "cert-dir", s.CertDirectory, "The directory where the TLS certs are located (by default /var/run/kubernetes). "+
 		"If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored.")
+	fs.StringVar(&s.BootstrapAuthToken, "bootstrap-auth-token", s.BootstrapAuthToken, ""+
+		"A string token that is used to get the issued certificate from API server. "+
+		"If --tls-cert-file, --tls-private-key-file are provided, then kubelet will use this token get a x509 cert from the API server"+
+		"that matches the generated private key."+
+		"The certificate and private key will be stored in --tls-cert-file and --tls-private-key-file.")
 	fs.StringVar(&s.HostnameOverride, "hostname-override", s.HostnameOverride, "If non-empty, will use this string as identification instead of the actual hostname.")
 	fs.StringVar(&s.PodInfraContainerImage, "pod-infra-container-image", s.PodInfraContainerImage, "The image whose network/ipc namespaces containers in each pod will use.")
 	fs.StringVar(&s.DockerEndpoint, "docker-endpoint", s.DockerEndpoint, "Use this for the docker endpoint to communicate with")
