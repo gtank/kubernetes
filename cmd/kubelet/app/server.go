@@ -39,6 +39,7 @@ import (
 	"k8s.io/kubernetes/cmd/kubelet/app/options"
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/api/resource"
+	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/apis/certificates"
 	"k8s.io/kubernetes/pkg/apis/componentconfig"
 	kubeExternal "k8s.io/kubernetes/pkg/apis/componentconfig/v1alpha1"
@@ -493,7 +494,7 @@ func getCertFromAPIServer(s *options.KubeletServer) error {
 	}
 
 	// (3).
-	certificate, err := requestCertificate(certificatesclient, req, 60) // Make a default timeout = 60s.
+	certificate, err := requestCertificate(certificatesclient, req) // TODO: Make a default timeout?
 	if err != nil {
 		return fmt.Errorf("unable to request certificate from API server: %v", err)
 	}
@@ -509,8 +510,14 @@ func getCertFromAPIServer(s *options.KubeletServer) error {
 // requestCertificate sends the certificate signing request to API server and watch ther object's status.
 // It returns the API server's issued certificate (pem-encoded) on success.
 // If there is any errors, or the watch timeouts, it returns an error.
-func requestCertificate(client unversionedcertificates.CertificateSigningRequestsGetter, request []byte, defaultTimeoutSeconds int64) (certificate []byte, err error) {
+func requestCertificate(client unversionedcertificates.CertificateSigningRequestsGetter, request []byte) (certificate []byte, err error) {
 	if _, err = client.CertificateSigningRequests().Create(&certificates.CertificateSigningRequest{
+		TypeMeta: unversioned.TypeMeta{
+			Kind: "CertificateSigningRequest",
+		},
+		ObjectMeta: api.ObjectMeta{
+			GenerateName: "csr-",
+		},
 		Spec: certificates.CertificateSigningRequestSpec{
 			Request: request,
 			// Username, UID, Groups will be injected by API server.
@@ -521,8 +528,7 @@ func requestCertificate(client unversionedcertificates.CertificateSigningRequest
 	}
 
 	resultCh, err := client.CertificateSigningRequests().Watch(api.ListOptions{
-		Watch:          true,
-		TimeoutSeconds: &defaultTimeoutSeconds,
+		Watch: true,
 		// Label and field selector are not used now.
 	})
 	if err != nil {
@@ -540,17 +546,18 @@ func requestCertificate(client unversionedcertificates.CertificateSigningRequest
 
 		if event.Type == watch.Modified {
 			status = event.Object.(*certificates.CertificateSigningRequest).Status
-			break
+			for _, c := range status.Conditions {
+				if c.Type == certificates.CertificateDenied {
+					return nil, fmt.Errorf("certificate signing request is not approved: %v, %v", c.Reason, c.Message)
+				}
+				if c.Type == certificates.CertificateApproved && status.Certificate != nil {
+					return status.Certificate, nil
+				}
+			}
 		}
 	}
 
-	if len(status.Conditions) > 0 {
-		condition := status.Conditions[len(status.Conditions)-1] // Check the latest condition.
-		if condition.Type != certificates.CertificateApproved {
-			return nil, fmt.Errorf("certificate signing request is not approved: %v, %v", condition.Reason, condition.Message)
-		}
-	}
-	return status.Certificate, nil
+	return nil, fmt.Errorf("certificate signing request failed for unknown reasons")
 }
 
 func authPathClientConfig(s *options.KubeletServer, useDefaults bool) (*restclient.Config, error) {
